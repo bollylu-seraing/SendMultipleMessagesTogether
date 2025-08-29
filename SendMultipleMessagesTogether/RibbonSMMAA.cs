@@ -12,6 +12,9 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace SendMultipleMessagesTogether {
   public partial class RibbonSMMAA {
+
+    private ILogger Logger => ThisAddIn.Parameters.Logger;
+
     private void Ribbon1_Load(object sender, RibbonUIEventArgs e) {
       Logger.Log("The Ribbon is loaded.");
     }

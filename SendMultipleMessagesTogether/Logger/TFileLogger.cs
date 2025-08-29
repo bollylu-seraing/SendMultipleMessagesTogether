@@ -9,6 +9,7 @@ using System.Windows.Forms;
 namespace SendMultipleMessagesTogether {
   internal class TFileLogger : ALogger {
     readonly string Filename;
+
     public TFileLogger(string filename) {
       MessageBox.Show($"Log file: {filename}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
       Filename = filename;
@@ -24,7 +25,12 @@ namespace SendMultipleMessagesTogether {
 
     public override void Log(string message) {
       try {
-        File.AppendAllText(Filename, $"{DateTime.Now:u}: {message}{Environment.NewLine}");
+        using (StreamWriter sw = new StreamWriter(Filename, true, Encoding.Default)) {
+          sw.AutoFlush = true;
+          foreach (string line in message.Split(new[] { Environment.NewLine }, StringSplitOptions.None)) {
+            sw.WriteLine($"{DateTime.Now:u}: {line}");
+          }
+        }
       } catch {
         MessageBox.Show($"Could not write to log file {Filename}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }

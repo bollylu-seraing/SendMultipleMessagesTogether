@@ -9,8 +9,19 @@ namespace SendMultipleMessagesTogether {
 
     public abstract void Log(string message);
 
-    public void LogError(string message, Exception ex) {
-      Log($"{message}: {ex.Message}");
+    public virtual void LogInfo(string message) {
+      Log($"Info  : {message}");
+    }
+
+    public virtual void LogWarning(string message) {
+      Log($"Warn  : {message}");
+    }
+    public virtual void LogError(string message, Exception ex) {
+      Log($"Error : {message} : {ex.Message}");
+    }
+
+    public virtual void LogError(string message) {
+      Log($"Error : {message}");
     }
 
 

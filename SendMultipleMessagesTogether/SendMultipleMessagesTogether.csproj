@@ -211,11 +211,19 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="Logger\ELogType.cs" />
+    <Compile Include="Logger\TConsoleLogger.cs" />
+    <Compile Include="Logger\TMessageBoxLogger.cs" />
+    <Compile Include="Parameters\AParameters.cs" />
+    <Compile Include="Parameters\IParameters.cs" />
     <Compile Include="Logger\ALogger.cs" />
     <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Parameters\TParametersConf.cs" />
+    <Compile Include="Parameters\TParametersRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="_Support\StringExtensions.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

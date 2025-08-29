@@ -6,7 +6,6 @@
     private System.ComponentModel.IContainer components = null;
 
     internal Microsoft.Office.Tools.Ribbon.RibbonButton button1;
-    public ILogger Logger { get; set; }
 
     public RibbonSMMAA() : base(Globals.Factory.GetRibbonFactory()) {
       InitializeComponent();
