@@ -29,6 +29,11 @@ namespace SendMultipleMessagesTogether {
       try {
         RegistryKey HKCU = Registry.CurrentUser;
         using (RegistryKey ApplicationKey = Registry.CurrentUser.OpenSubKey(KeyName, false)) {
+          if (ApplicationKey is null) {
+            Logger.LogWarning($"Registry key {$"HKCU\\{KeyName}".WithQuotes()} does not exist.");
+            Logger.LogInfo("Attempt to save the registry keys with default values.");
+            return Save();
+          }
           Recipient = (string)(ApplicationKey?.GetValue(KEY_RECIPIENT) ?? DEFAULT_RECIPIENT);
           Prefix = (string)(ApplicationKey?.GetValue(KEY_PREFIX) ?? DEFAULT_PREFIX);
           LogTypeString = (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE);
@@ -43,7 +48,7 @@ namespace SendMultipleMessagesTogether {
         }
         return true;
       } catch (Exception ex) {
-        Logger.LogError($"Error reading parameters from registry key HKCU\\{KeyName.WithQuotes()}", ex);
+        Logger.LogError($"Error reading parameters from registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
         Logger.LogInfo("Attempt to save the registry keys with default values.");
         return Save();
       }
@@ -70,7 +75,7 @@ namespace SendMultipleMessagesTogether {
         }
         return true;
       } catch (Exception ex) {
-        Logger.LogError($"Error writing parameters to registry key HKCU\\{KeyName.WithQuotes()}", ex);
+        Logger.LogError($"Error writing parameters to registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
         return false;
       }
     }

@@ -9,7 +9,7 @@ namespace SendMultipleMessagesTogether {
   public abstract class AParameters : IParameters {
 
     protected const string KEY_PREFIX = "Prefix";
-    protected const string DEFAULT_PREFIX = "SMM - ";
+    protected const string DEFAULT_PREFIX = "SMMA - ";
 
     protected const string KEY_RECIPIENT = "Recipient";
     protected const string DEFAULT_RECIPIENT = "indic@missing.local";
