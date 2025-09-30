@@ -9,14 +9,18 @@ namespace SendMultipleMessagesTogether {
   public abstract class AParameters : IParameters {
 
     protected const string KEY_PREFIX = "Prefix";
-    protected const string DEFAULT_PREFIX = "SMMA - ";
+    protected const string DEFAULT_PREFIX = "Indicateur - TR: ";
 
     protected const string KEY_RECIPIENT = "Recipient";
-    protected const string DEFAULT_RECIPIENT = "indic@missing.local";
+    //protected const string DEFAULT_RECIPIENT = "seraing-docs.imio-app.be";
+    protected const string DEFAULT_RECIPIENT = "l.bolly@seraing.be";
 
     protected const string KEY_LOG_TYPE = "LogType";
     //protected static string DEFAULT_LOG_TYPE = ELogType.MessageBox.ToString();
     protected static string DEFAULT_LOG_TYPE = ELogType.File.ToString();
+
+    protected const string KEY_CATEGORY = "Category";
+    protected const string DEFAULT_CATEGORY = "indicaté";
 
     protected const string KEY_LOG_FILENAME = "LogFilename";
     protected static string DEFAULT_LOG_FILENAME = "SendMultipleMessagesTogether.log";
@@ -26,7 +30,7 @@ namespace SendMultipleMessagesTogether {
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     protected AParameters() {
-      Logger = new TMessageBoxLogger();
+      //Logger = new TMessageBoxLogger();
     }
 
     protected AParameters(IParameters parameters) {
@@ -52,6 +56,6 @@ namespace SendMultipleMessagesTogether {
     public string LogFilename { get; protected set; } = DEFAULT_LOG_FULL_FILENAME;
     public string Recipient { get; protected set; } = DEFAULT_RECIPIENT;
     public string Prefix { get; protected set; } = DEFAULT_PREFIX;
-
+    public string Category { get; protected set; } = DEFAULT_CATEGORY;
   }
 }

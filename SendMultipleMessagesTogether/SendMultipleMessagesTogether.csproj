@@ -256,6 +256,7 @@
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="SendMultipleMessagesTogether_1_TemporaryKey.pfx" />
     <None Include="SendMultipleMessagesTogether_TemporaryKey.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
@@ -274,10 +275,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>SendMultipleMessagesTogether_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>SendMultipleMessagesTogether_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>9CD246D4F27990CD6C2B821A7C672BC1DF164464</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>33565C036009E4F8293DA9967EDB64EAB8BC275A</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>

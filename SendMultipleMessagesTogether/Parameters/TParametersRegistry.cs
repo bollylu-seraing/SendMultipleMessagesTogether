@@ -16,10 +16,10 @@ namespace SendMultipleMessagesTogether {
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TParametersRegistry() {
-      Logger = new TMessageBoxLogger();
+      //Logger = new TMessageBoxLogger();
     }
     public TParametersRegistry(ILogger logger) {
-      Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      //Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     public TParametersRegistry(IParameters parameters) : base(parameters) {
     }
@@ -30,6 +30,7 @@ namespace SendMultipleMessagesTogether {
         RegistryKey HKCU = Registry.CurrentUser;
         using (RegistryKey ApplicationKey = Registry.CurrentUser.OpenSubKey(KeyName, false)) {
           if (ApplicationKey is null) {
+            Logger = new TMessageBoxLogger();
             Logger.LogWarning($"Registry key {$"HKCU\\{KeyName}".WithQuotes()} does not exist.");
             Logger.LogInfo("Attempt to save the registry keys with default values.");
             return Save();
@@ -38,6 +39,7 @@ namespace SendMultipleMessagesTogether {
           Prefix = (string)(ApplicationKey?.GetValue(KEY_PREFIX) ?? DEFAULT_PREFIX);
           LogTypeString = (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE);
           LogFilename = ((string)(ApplicationKey?.GetValue(KEY_LOG_FILENAME) ?? DEFAULT_LOG_FULL_FILENAME)).RemoveExternalQuotes();
+          Category = (string)(ApplicationKey?.GetValue(KEY_CATEGORY) ?? DEFAULT_CATEGORY);
         }
         if (LogType == ELogType.File) {
           string LogFilePath = Path.GetDirectoryName(LogFilename);
@@ -45,8 +47,10 @@ namespace SendMultipleMessagesTogether {
             Directory.CreateDirectory(LogFilePath);
           }
           Logger = new TFileLogger(LogFilename);
+        } else {
+          Logger = new TMessageBoxLogger();
         }
-        return true;
+          return true;
       } catch (Exception ex) {
         Logger.LogError($"Error reading parameters from registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
         Logger.LogInfo("Attempt to save the registry keys with default values.");
@@ -65,17 +69,19 @@ namespace SendMultipleMessagesTogether {
               NewApplicationKey.SetValue(KEY_PREFIX, Prefix);
               NewApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
               NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
+              NewApplicationKey.SetValue(KEY_CATEGORY, Category);
             }
           } else {
             ApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
             ApplicationKey.SetValue(KEY_PREFIX, Prefix);
             ApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
             ApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
+            ApplicationKey.SetValue(KEY_CATEGORY, Category);
           }
         }
         return true;
       } catch (Exception ex) {
-        Logger.LogError($"Error writing parameters to registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
+        Logger?.LogError($"Error writing parameters to registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
         return false;
       }
     }

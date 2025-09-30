@@ -16,6 +16,9 @@ namespace SendMultipleMessagesTogether {
     string LogFilename { get; }
 
     string Recipient { get; }
+
     string Prefix { get; }
+
+    string Category { get; }
   }
 }

@@ -30,8 +30,20 @@ namespace SendMultipleMessagesTogether {
         }
 
         // Now we can process the selected mail items
-        foreach (MailItem MailItem in SelectedMailItems) {
-          Logger.Log($"Processing {MailItem.Subject}");
+        foreach (MailItem MailItemItem in SelectedMailItems) {
+
+          MailItem NewMailItem = (MailItem)Globals.ThisAddIn.Application.CreateItem(OlItemType.olMailItem);
+          NewMailItem.Subject = $"{ThisAddIn.Parameters.Prefix}{MailItemItem.Subject}";
+          NewMailItem.To = ThisAddIn.Parameters.Recipient;
+          NewMailItem.Attachments.Add(MailItemItem, OlAttachmentType.olByValue, Type.Missing, Type.Missing);
+          //NewMailItem.Display();
+          NewMailItem.Send();
+
+          string CurrentCategories = MailItemItem.Categories?.Trim() ?? string.Empty;
+          MailItemItem.Categories = $"{CurrentCategories}{(CurrentCategories != "" ? ",":"")}{ThisAddIn.Parameters.Category}";
+          MailItemItem.Save();
+
+          Logger.Log($"Processing {MailItemItem.Subject}");
         }
       } catch (System.Exception ex) {
         Logger.LogError("Error processing", ex);
