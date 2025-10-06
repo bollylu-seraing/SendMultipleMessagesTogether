@@ -4,7 +4,7 @@
     <tabs>
       <tab idMso="TabAddIns">
         <group id="MyGroup" label="IA.Docs" image ="letter.png">
-          <button id="MyButton" enabled="true" getImage="GetImageLetter" size="large" onAction="ProcessMessages_Click"/>
+          <button id="MyButton" enabled="true" getImage="GetImageLetter" size="large" onAction="ProcessMessages_Click" label="Indicateur"/>
         </group>
       </tab>
     </tabs>

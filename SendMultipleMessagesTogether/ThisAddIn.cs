@@ -27,14 +27,6 @@ namespace SendMultipleMessagesTogether {
 
     public static IParameters Parameters { get; private set; }
 
-    //protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject() {
-    //  return Globals.Factory.GetRibbonFactory().CreateRibbonManager(
-    //    new Microsoft.Office.Tools.Ribbon.IRibbonExtension[] {
-    //      new RibbonSMMAA()
-    //    }
-    //  );
-    //}
-
     protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject() {
       return new RibbonSMA();
     }

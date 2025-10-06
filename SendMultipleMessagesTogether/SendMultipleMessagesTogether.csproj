@@ -239,11 +239,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="RibbonSMMAA.resx">
-      <DependentUpon>RibbonSMMAA.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="bollyl.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -252,19 +248,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RibbonSMMAA.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="RibbonSMMAA.Designer.cs">
-      <DependentUpon>RibbonSMMAA.cs</DependentUpon>
-    </Compile>
     <Compile Include="Logger\TFileLogger.cs" />
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
     <None Include="SendMultipleMessagesTogether_1_TemporaryKey.pfx" />
     <None Include="SendMultipleMessagesTogether_TemporaryKey.pfx" />
-    <None Include="SMMA.snk" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
     </None>
@@ -286,16 +275,17 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>bollyl.pfx</ManifestKeyFile>
+    <ManifestKeyFile>SendMultipleMessagesTogether_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>33565C036009E4F8293DA9967EDB64EAB8BC275A</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>9CD246D4F27990CD6C2B821A7C672BC1DF164464</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>bollyl.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

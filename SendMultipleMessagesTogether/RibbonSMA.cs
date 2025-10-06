@@ -6,26 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+
+using SendMultipleMessagesTogether.Process;
+
 using Office = Microsoft.Office.Core;
-
-// TODO:  Follow these steps to enable the Ribbon (XML) item:
-
-// 1: Copy the following code block into the ThisAddin, ThisWorkbook, or ThisDocument class.
-
-//  protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
-//  {
-//      return new RibbonSMA();
-//  }
-
-// 2. Create callback methods in the "Ribbon Callbacks" region of this class to handle user
-//    actions, such as clicking a button. Note: if you have exported this Ribbon from the Ribbon designer,
-//    move your code from the event handlers to the callback methods and modify the code to work with the
-//    Ribbon extensibility (RibbonX) programming model.
-
-// 3. Assign attributes to the control tags in the Ribbon XML file to identify the appropriate callback methods in your code.  
-
-// For more information, see the Ribbon XML documentation in the Visual Studio Tools for Office Help.
-
 
 namespace SendMultipleMessagesTogether {
   [ComVisible(true)]
@@ -33,7 +17,7 @@ namespace SendMultipleMessagesTogether {
     private Office.IRibbonUI ribbon;
 
     public RibbonSMA() {
-      
+
     }
 
     #region IRibbonExtensibility Members
@@ -51,6 +35,10 @@ namespace SendMultipleMessagesTogether {
       this.ribbon = ribbonUI;
     }
 
+    public void ProcessMessages_Click(Office.IRibbonControl control) {
+      IProcess Process = new TProcess(Globals.ThisAddIn.Application, ThisAddIn.Logger, ThisAddIn.Parameters);
+      Process.Execute();
+    }
     #endregion
 
     #region Helpers
