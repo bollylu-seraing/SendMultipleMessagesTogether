@@ -26,6 +26,28 @@ namespace SendMultipleMessagesTogether {
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+    public override bool Init() {
+      if (ConfigFile == "") {
+        Logger.LogError("Configuration file name is empty.");
+        return false;
+      }
+
+      try {
+        using (StreamWriter writer = new StreamWriter(ConfigFile, false)) {
+          writer.WriteLine("# Configuration file for SendMultipleMessagesTogether");
+          writer.WriteLine($"{KEY_RECIPIENT}{SEPARATOR}{DEFAULT_RECIPIENT.WithQuotes()}");
+          writer.WriteLine($"{KEY_PREFIX}{SEPARATOR}{DEFAULT_PREFIX.WithQuotes()}");
+          writer.WriteLine($"{KEY_LOG_TYPE}{SEPARATOR}{DEFAULT_LOG_TYPE}");
+          writer.WriteLine($"{KEY_LOG_FILENAME}{SEPARATOR}{DEFAULT_LOG_FULL_FILENAME.WithQuotes()}");
+          writer.WriteLine($"{KEY_CATEGORY}{SEPARATOR}{DEFAULT_CATEGORY.WithQuotes()}");
+        }
+        return true;
+      } catch (Exception ex) {
+        Logger.LogError($"Error saving parameters to configuration file {ConfigFile.WithQuotes()}", ex);
+        return false;
+      }
+    }
+    
     public override bool Read() {
       if (!File.Exists(ConfigFile)) {
         Logger.LogError($"Configuration file {ConfigFile.WithQuotes()} does not exist.");
@@ -41,7 +63,7 @@ namespace SendMultipleMessagesTogether {
               continue;
             }
             string ParameterName = TextLine.Before(SEPARATOR).Trim();
-            string ParameterValue = TextLine.After(SEPARATOR);
+            string ParameterValue = TextLine.After(SEPARATOR).RemoveExternalQuotes();
             switch (ParameterName.ToLowerInvariant()) {
               case KEY_RECIPIENT:
                 Recipient = ParameterValue.Trim().ToLowerInvariant();
@@ -54,6 +76,9 @@ namespace SendMultipleMessagesTogether {
                 break;
               case KEY_LOG_FILENAME:
                 LogFilename = ParameterValue.RemoveExternalQuotes();
+                break;
+              case KEY_CATEGORY:
+                Category = ParameterValue;
                 break;
               default:
                 Logger.LogWarning($"Unknown parameter {ParameterName.WithQuotes()} in configuration file {ConfigFile.WithQuotes()}");
@@ -84,10 +109,11 @@ namespace SendMultipleMessagesTogether {
       try {
         using (StreamWriter writer = new StreamWriter(ConfigFile, false)) {
           writer.WriteLine("# Configuration file for SendMultipleMessagesTogether");
-          writer.WriteLine($"{KEY_RECIPIENT}{SEPARATOR}{Recipient}");
-          writer.WriteLine($"{KEY_PREFIX}{SEPARATOR}{Prefix}");
-          writer.WriteLine($"{KEY_LOG_TYPE}{SEPARATOR}{LogTypeString}");
+          writer.WriteLine($"{KEY_RECIPIENT}{SEPARATOR}{Recipient.WithQuotes()}");
+          writer.WriteLine($"{KEY_PREFIX}{SEPARATOR}{Prefix.WithQuotes()}");
+          writer.WriteLine($"{KEY_LOG_TYPE}{SEPARATOR}{LogTypeString.WithQuotes()}");
           writer.WriteLine($"{KEY_LOG_FILENAME}{SEPARATOR}{LogFilename.Trim().WithQuotes()}");
+          writer.WriteLine($"{KEY_CATEGORY}{SEPARATOR}{Category.WithQuotes()}");
         }
         return true;
       } catch (Exception ex) {

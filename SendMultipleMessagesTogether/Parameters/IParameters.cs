@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SendMultipleMessagesTogether {
   public interface IParameters {
+
+    bool Init();
     bool Read();
     bool Save();
 

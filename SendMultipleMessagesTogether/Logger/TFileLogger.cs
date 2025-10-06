@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SendMultipleMessagesTogether.Support;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SendMultipleMessagesTogether {
     readonly string Filename;
 
     public TFileLogger(string filename) {
-      MessageBox.Show($"Log file: {filename}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      //MessageBox.Show($"Log file: {filename.WithQuotes()}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
       Filename = filename;
       string FilePath = Path.GetDirectoryName(filename);
       try {
@@ -19,7 +20,7 @@ namespace SendMultipleMessagesTogether {
           Directory.CreateDirectory(FilePath);
         }
       } catch (Exception ex) {
-        MessageBox.Show($"Could not create log directory {FilePath}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show($"Could not create log directory {FilePath.WithQuotes()}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -32,7 +33,7 @@ namespace SendMultipleMessagesTogether {
           }
         }
       } catch {
-        MessageBox.Show($"Could not write to log file {Filename}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show($"Could not write to log file {Filename.WithQuotes()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
   }

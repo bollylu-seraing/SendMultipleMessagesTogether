@@ -1,4 +1,7 @@
-﻿namespace SendMultipleMessagesTogether {
+﻿using System.Drawing;
+using System.IO;
+
+namespace SendMultipleMessagesTogether {
   partial class RibbonSMMAA : Microsoft.Office.Tools.Ribbon.RibbonBase {
     /// <summary>
     /// Required designer variable.
@@ -49,19 +52,22 @@
       // 
       this.group1.Items.Add(this.button1);
       this.group1.Name = "group1";
+      this.group1.Label = "IA.Docs";
       // 
       // button1
       // 
       resources.ApplyResources(this.button1, "button1");
       this.button1.Name = "button1";
       this.button1.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button1_Click);
-      // 
+      this.button1.Image = Properties.Resources.letter;
+      this.button1.ShowImage = true;
+
       // RibbonSMMAA
       // 
       this.Name = "RibbonSMMAA";
       this.RibbonType = "Microsoft.Outlook.Explorer";
       this.Tabs.Add(this.tab1);
-      this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.Ribbon1_Load);
+      //this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.Ribbon1_Load);
       this.tab1.ResumeLayout(false);
       this.tab1.PerformLayout();
       this.group1.ResumeLayout(false);

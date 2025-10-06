@@ -12,4 +12,5 @@ namespace SendMultipleMessagesTogether {
     void LogError(string message);
     void LogError(string message, Exception ex);
   }
+
 }

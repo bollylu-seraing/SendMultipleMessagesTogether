@@ -19,31 +19,35 @@ namespace SendMultipleMessagesTogether {
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);
 
+    public static ILogger DEFAULT_LOGGER => new TMessageBoxLogger();
+    public static ILogger Logger => Parameters?.Logger ?? DEFAULT_LOGGER;
+
     public static string ApplicationPath { get; private set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
     public static string ApplicationParameters { get; private set; } = Path.Combine(PARAMETERS_PATH, PARAMETERS_FILENAME);
 
     public static IParameters Parameters { get; private set; }
 
-    protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject() {
-      Parameters = new TParametersRegistry();
-      Parameters.Logger?.LogInfo("Reading base parameters from registry.");
-      return Globals.Factory.GetRibbonFactory().CreateRibbonManager(
-        new Microsoft.Office.Tools.Ribbon.IRibbonExtension[] {
-          new RibbonSMMAA()
-        }
-      );
+    //protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject() {
+    //  return Globals.Factory.GetRibbonFactory().CreateRibbonManager(
+    //    new Microsoft.Office.Tools.Ribbon.IRibbonExtension[] {
+    //      new RibbonSMMAA()
+    //    }
+    //  );
+    //}
+
+    protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject() {
+      return new RibbonSMA();
     }
 
     private void ThisAddIn_Startup(object sender, System.EventArgs e) {
       Parameters = new TParametersRegistry();
-      Parameters.Logger?.LogInfo("Reading parameters from registry.");
-      if (!Parameters.Read()) {
-        Parameters = new TParametersConf(new TMessageBoxLogger(), ApplicationParameters);
-        Parameters.Logger?.LogInfo($"Reading parameters from configuration file {ApplicationParameters.WithQuotes()}.");
-        if (!Parameters.Read()) {
-          Parameters.Logger?.LogWarning("Using default parameters.");
-        }
+      if (!Parameters.Init()) {
+        return;
       }
+      if (!Parameters.Read()) {
+        return;
+      }
+
     }
 
 

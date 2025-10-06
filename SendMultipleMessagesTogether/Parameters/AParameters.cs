@@ -26,12 +26,21 @@ namespace SendMultipleMessagesTogether {
     protected static string DEFAULT_LOG_FILENAME = "SendMultipleMessagesTogether.log";
     protected static string DEFAULT_LOG_FULL_FILENAME = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ThisAddIn.DEFAULT_APPLICATION_NAME, DEFAULT_LOG_FILENAME);
 
-    public ILogger Logger { get; protected set; }
+    private ILogger _logger = null;
+    public ILogger Logger {
+      get {
+        if (_logger == null) {
+          _logger = new TMessageBoxLogger();
+        }
+        return _logger;
+      }
+      protected set {
+        _logger = value;
+      }
+    }
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
-    protected AParameters() {
-      //Logger = new TMessageBoxLogger();
-    }
+    protected AParameters() { }
 
     protected AParameters(IParameters parameters) {
       if (parameters == null) {
@@ -48,6 +57,7 @@ namespace SendMultipleMessagesTogether {
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+    public abstract bool Init();
     public abstract bool Read();
     public abstract bool Save();
 
