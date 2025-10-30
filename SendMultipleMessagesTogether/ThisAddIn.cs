@@ -15,7 +15,7 @@ namespace SendMultipleMessagesTogether {
   public partial class ThisAddIn {
 
     public const string DEFAULT_APPLICATION_NAME = "SendMultipleMessagesTogether";
-    public static Version APPLICATION_VERSION = new Version(1, 0);
+    public static Version APPLICATION_VERSION = new Version(1, 0, 1);
 
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);

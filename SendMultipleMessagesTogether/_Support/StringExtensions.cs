@@ -315,5 +315,28 @@ namespace SendMultipleMessagesTogether.Support {
 
       return source.Remove(source.Length - length, length);
     }
+
+    public static bool ToBool(this string booleanString) {
+      #region Validate parameters
+      if (booleanString == null) {
+        return false;
+      }
+      #endregion Validate parameters
+      switch (booleanString.Trim().ToLower()) {
+        case "0":
+        case "false":
+        case "no":
+        case "n":
+          return false;
+        case "1":
+        case "true":
+        case "yes":
+        case "y":
+          return true;
+        default:
+          return false;
+      }
+    }
   }
+
 }

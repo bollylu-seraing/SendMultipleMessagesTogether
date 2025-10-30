@@ -48,6 +48,11 @@ namespace SendMultipleMessagesTogether.Process {
             continue;
           }
 
+          if (ThisAddIn.Parameters.WithConfirmation && MessageBox.Show($"Envoyer le message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} à l'Indicateur ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) {
+            Logger.LogInfo($"Envoi du message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} annulé par l'utilisateur");
+            return false;
+          }
+
           SendMailAsAttachment(MailItemItem);
           MarkAsIndicated(MailItemItem);
 
@@ -55,6 +60,7 @@ namespace SendMultipleMessagesTogether.Process {
 
         } catch (System.Exception ex) {
           Logger.LogError($"Error processing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}", ex);
+          return false;
         }
       }
 

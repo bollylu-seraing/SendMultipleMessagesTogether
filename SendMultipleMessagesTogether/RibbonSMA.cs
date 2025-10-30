@@ -1,14 +1,15 @@
-﻿using System;
+﻿using SendMultipleMessagesTogether.Process;
+using SendMultipleMessagesTogether.Support;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
-
-using SendMultipleMessagesTogether.Process;
-
+using System.Windows.Forms;
 using Office = Microsoft.Office.Core;
 
 namespace SendMultipleMessagesTogether {
@@ -20,6 +21,9 @@ namespace SendMultipleMessagesTogether {
     private const string TAB_ID = "TabMail";
     private const string GROUP_ID = "SendMultipleMessagesTogetherGroup";
     private const string BUTTON_ID = "ProcessMessagesButton";
+
+    private const string INDICATEUR_BUTTON_ID = "Indicateur";
+    private const string EDIT_INDICATEUR_PARAMETERS_BUTTON_ID = "IndicateurParam";
     private ILogger Logger => ThisAddIn.Logger;
 
     #region --- Constructor ---------------------------------------------------
@@ -47,6 +51,22 @@ namespace SendMultipleMessagesTogether {
       IProcess Process = new TProcess(Globals.ThisAddIn.Application, ThisAddIn.Logger, ThisAddIn.Parameters);
       Process.Execute();
     }
+
+    public void EditParameters_Click(Office.IRibbonControl control) {
+      using (Form1 ParametersForm = new Form1(ThisAddIn.Parameters)) {
+        DialogResult Result =  ParametersForm.ShowDialog();
+        if (Result == DialogResult.OK) {
+          ParametersForm.NewParameters.Save();
+          ThisAddIn.Parameters.Read();
+          Logger.LogInfo("Reading new parameters ...");
+          Logger.LogInfo($"  Recipient: {ThisAddIn.Parameters.Recipient.WithQuotes()}");
+          Logger.LogInfo($"  Prefix: {ThisAddIn.Parameters.Prefix.WithQuotes()}");
+          Logger.LogInfo($"  Category: {ThisAddIn.Parameters.Category.WithQuotes()}");
+          Logger.LogInfo($"  LogFilename: {ThisAddIn.Parameters.LogFilename.WithQuotes()}");
+        }
+      }
+    }
+
     #endregion
 
     #region Helpers
@@ -66,8 +86,21 @@ namespace SendMultipleMessagesTogether {
       return null;
     }
 
-    public Image GetImageLetter(Office.IRibbonControl control) {
-      return SendMultipleMessagesTogether.Properties.Resources.letter;
+    public Image GetImage(Office.IRibbonControl control) {
+      Logger.LogInfo($"GetImage called for {control.Id}");
+      switch (control.Id) {
+        case INDICATEUR_BUTTON_ID:
+          Logger.LogInfo("Returning image for Indicateur");
+          return SendMultipleMessagesTogether.Properties.Resources.letter;
+        case EDIT_INDICATEUR_PARAMETERS_BUTTON_ID:
+          Logger.LogInfo("Returning image for IndicateurParams");
+          return SendMultipleMessagesTogether.Properties.Resources.parameters.ToBitmap();
+        default:
+          Logger.LogError($"Unknown control Id: {control.Id}");
+          return null;
+
+      }
+      
     }
     #endregion
   }

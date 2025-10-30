@@ -11,14 +11,23 @@
                centerVertically="true"
                screentip="Extensions pour IA.Docs"
                >
-          <button id="MyButton"
+          <button id="Indicateur"
                   description="Envoyer le(s) message(s) sélectionné(s) à l'indicateur"
                   enabled="true"
-                  getImage="GetImageLetter"
+                  getImage="GetImage"
                   size="large"
                   onAction="ProcessMessages_Click"
                   label="Indicateur"
                   screentip="Envoyer le(s) message(s) sélectionné(s) à l'indicateur" 
+                  />
+          <button id="IndicateurParam"
+                  description="Voir et éditer les paramètres"
+                  screentip="Voir et éditer les paramètres"
+                  enabled="true"
+                  getImage="GetImage"
+                  size="normal"
+                  onAction="EditParameters_Click"
+                  label="Paramètres Indicateur"
                   />
         </group>
       </tab>

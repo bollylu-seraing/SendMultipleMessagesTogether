@@ -9,22 +9,25 @@ namespace SendMultipleMessagesTogether {
   public abstract class AParameters : IParameters {
 
     protected const string KEY_PREFIX = "Prefix";
-    protected const string DEFAULT_PREFIX = "Indicateur - TR: ";
+    public const string DEFAULT_PREFIX = "Indicateur - TR: ";
 
     protected const string KEY_RECIPIENT = "Recipient";
-    //protected const string DEFAULT_RECIPIENT = "seraing-docs.imio-app.be";
-    protected const string DEFAULT_RECIPIENT = "l.bolly@seraing.be";
+    public const string DEFAULT_RECIPIENT = "seraing-docs.imio-app.be";
+    //public const string DEFAULT_RECIPIENT = "l.bolly@seraing.be";
 
     protected const string KEY_LOG_TYPE = "LogType";
     //protected static string DEFAULT_LOG_TYPE = ELogType.MessageBox.ToString();
-    protected static string DEFAULT_LOG_TYPE = ELogType.File.ToString();
+    public static string DEFAULT_LOG_TYPE = ELogType.File.ToString();
 
     protected const string KEY_CATEGORY = "Category";
-    protected const string DEFAULT_CATEGORY = "indicaté";
+    public const string DEFAULT_CATEGORY = "indicaté";
 
     protected const string KEY_LOG_FILENAME = "LogFilename";
     protected static string DEFAULT_LOG_FILENAME = "SendMultipleMessagesTogether.log";
-    protected static string DEFAULT_LOG_FULL_FILENAME = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ThisAddIn.DEFAULT_APPLICATION_NAME, DEFAULT_LOG_FILENAME);
+    public static string DEFAULT_LOG_FULL_FILENAME = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ThisAddIn.DEFAULT_APPLICATION_NAME, DEFAULT_LOG_FILENAME);
+
+    protected const string KEY_WITH_CONFIRMATION = "WithConfirmation";
+    public const bool DEFAULT_WITH_CONFIRMATION = false;
 
     private ILogger _logger = null;
     public ILogger Logger {
@@ -61,11 +64,12 @@ namespace SendMultipleMessagesTogether {
     public abstract bool Read();
     public abstract bool Save();
 
-    protected string LogTypeString { get; set; } = DEFAULT_LOG_TYPE;
+    public string LogTypeString { get; set; } = DEFAULT_LOG_TYPE;
     public ELogType LogType => (ELogType)Enum.Parse(typeof(ELogType), LogTypeString ?? DEFAULT_LOG_TYPE);
-    public string LogFilename { get; protected set; } = DEFAULT_LOG_FULL_FILENAME;
-    public string Recipient { get; protected set; } = DEFAULT_RECIPIENT;
-    public string Prefix { get; protected set; } = DEFAULT_PREFIX;
-    public string Category { get; protected set; } = DEFAULT_CATEGORY;
+    public string LogFilename { get; set; } = DEFAULT_LOG_FULL_FILENAME;
+    public string Recipient { get; set; } = DEFAULT_RECIPIENT;
+    public string Prefix { get; set; } = DEFAULT_PREFIX;
+    public string Category { get; set; } = DEFAULT_CATEGORY;
+    public bool WithConfirmation { get; set; } = DEFAULT_WITH_CONFIRMATION;
   }
 }

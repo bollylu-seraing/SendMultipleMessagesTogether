@@ -21,6 +21,13 @@ namespace SendMultipleMessagesTogether {
       Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     public TParametersRegistry(IParameters parameters) : base(parameters) {
+      Recipient = parameters.Recipient;
+      Prefix = parameters.Prefix;
+      LogTypeString = parameters.LogTypeString;
+      LogFilename = parameters.LogFilename;
+      Category = parameters.Category;
+      WithConfirmation = parameters.WithConfirmation;
+
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -35,6 +42,7 @@ namespace SendMultipleMessagesTogether {
               NewApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
               NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
               NewApplicationKey.SetValue(KEY_CATEGORY, Category);
+              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
             }
           }
         }
@@ -57,6 +65,7 @@ namespace SendMultipleMessagesTogether {
           LogTypeString = (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE);
           LogFilename = ((string)(ApplicationKey?.GetValue(KEY_LOG_FILENAME) ?? DEFAULT_LOG_FULL_FILENAME)).RemoveExternalQuotes();
           Category = (string)(ApplicationKey?.GetValue(KEY_CATEGORY) ?? DEFAULT_CATEGORY);
+          WithConfirmation = ((string)(ApplicationKey?.GetValue(KEY_WITH_CONFIRMATION) ?? DEFAULT_WITH_CONFIRMATION)).ToBool();
         }
         if (LogType == ELogType.File) {
           string LogFilePath = Path.GetDirectoryName(LogFilename);
@@ -87,6 +96,7 @@ namespace SendMultipleMessagesTogether {
               NewApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
               NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
               NewApplicationKey.SetValue(KEY_CATEGORY, Category);
+              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
             }
           } else {
             ApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
@@ -94,6 +104,7 @@ namespace SendMultipleMessagesTogether {
             ApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
             ApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
             ApplicationKey.SetValue(KEY_CATEGORY, Category);
+            ApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
           }
         }
         return true;
