@@ -16,9 +16,17 @@ namespace SendMultipleMessagesTogether {
   public class RibbonSMA : Office.IRibbonExtensibility {
     private Office.IRibbonUI ribbon;
 
+    private const string RIBBON_ID = "Microsoft.Outlook.Explorer";
+    private const string TAB_ID = "TabMail";
+    private const string GROUP_ID = "SendMultipleMessagesTogetherGroup";
+    private const string BUTTON_ID = "ProcessMessagesButton";
+    private ILogger Logger => ThisAddIn.Logger;
+
+    #region --- Constructor ---------------------------------------------------
     public RibbonSMA() {
 
     }
+    #endregion ----------------------------------------------------------------
 
     #region IRibbonExtensibility Members
 

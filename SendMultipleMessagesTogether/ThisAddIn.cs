@@ -15,6 +15,7 @@ namespace SendMultipleMessagesTogether {
   public partial class ThisAddIn {
 
     public const string DEFAULT_APPLICATION_NAME = "SendMultipleMessagesTogether";
+    public static Version APPLICATION_VERSION = new Version(1, 0);
 
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);
@@ -40,6 +41,12 @@ namespace SendMultipleMessagesTogether {
         return;
       }
 
+      Logger.LogInfo($"SMMT v{APPLICATION_VERSION} started");
+
+    }
+
+    private void ThisAddIn_Shutdown(object sender, System.EventArgs e) {
+      Logger.LogInfo($"SMMT v{APPLICATION_VERSION} exited gracefuly");
     }
 
 
@@ -51,6 +58,7 @@ namespace SendMultipleMessagesTogether {
     /// </summary>
     private void InternalStartup() {
       this.Startup += new System.EventHandler(ThisAddIn_Startup);
+      this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
     }
 
     #endregion

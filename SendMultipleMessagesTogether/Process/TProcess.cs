@@ -19,7 +19,7 @@ namespace SendMultipleMessagesTogether.Process {
     const string ERROR_SUBJECT_MISSING = "[Subject is missing]";
 
     private readonly Outlook.Application Application;
-    private Explorer ActiveExplorer => Application.ActiveExplorer();
+    private Explorer ActiveExplorer => Application?.ActiveExplorer() ?? throw new ApplicationException("ActiveExplorer is (null)");
     private readonly ILogger Logger;
     private readonly IParameters Parameters;
 
@@ -51,7 +51,7 @@ namespace SendMultipleMessagesTogether.Process {
           SendMailAsAttachment(MailItemItem);
           MarkAsIndicated(MailItemItem);
 
-          Logger.Log($"Processed {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}");
+          Logger.LogInfo($"Processed {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}");
 
         } catch (System.Exception ex) {
           Logger.LogError($"Error processing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}", ex);
