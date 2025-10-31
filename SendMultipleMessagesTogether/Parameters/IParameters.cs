@@ -13,8 +13,6 @@ namespace SendMultipleMessagesTogether {
 
     ILogger Logger { get; }
 
-    string LogTypeString { get; }
-
     ELogType LogType { get; }
 
     // In case it's a file type logger, here is the filename and path
@@ -27,5 +25,7 @@ namespace SendMultipleMessagesTogether {
     string Category { get; }
 
     bool WithConfirmation { get; }
+
+    bool CleanupSentMessages { get; }
   }
 }

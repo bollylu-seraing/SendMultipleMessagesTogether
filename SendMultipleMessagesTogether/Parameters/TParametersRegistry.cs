@@ -17,17 +17,10 @@ namespace SendMultipleMessagesTogether {
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TParametersRegistry() {
     }
-    public TParametersRegistry(ILogger logger) {
-      Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    //public TParametersRegistry(ILogger logger) {
+    //  Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    //}
     public TParametersRegistry(IParameters parameters) : base(parameters) {
-      Recipient = parameters.Recipient;
-      Prefix = parameters.Prefix;
-      LogTypeString = parameters.LogTypeString;
-      LogFilename = parameters.LogFilename;
-      Category = parameters.Category;
-      WithConfirmation = parameters.WithConfirmation;
-
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -39,10 +32,11 @@ namespace SendMultipleMessagesTogether {
             using (RegistryKey NewApplicationKey = HKCU.CreateSubKey(KeyName)) {
               NewApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
               NewApplicationKey.SetValue(KEY_PREFIX, Prefix);
-              NewApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
+              NewApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
               NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
               NewApplicationKey.SetValue(KEY_CATEGORY, Category);
               NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
+              NewApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages);
             }
           }
         }
@@ -62,10 +56,11 @@ namespace SendMultipleMessagesTogether {
           }
           Recipient = (string)(ApplicationKey?.GetValue(KEY_RECIPIENT) ?? DEFAULT_RECIPIENT);
           Prefix = (string)(ApplicationKey?.GetValue(KEY_PREFIX) ?? DEFAULT_PREFIX);
-          LogTypeString = (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE);
+          LogType = (ELogType)Enum.Parse(typeof(ELogType), (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE.ToString()));
           LogFilename = ((string)(ApplicationKey?.GetValue(KEY_LOG_FILENAME) ?? DEFAULT_LOG_FULL_FILENAME)).RemoveExternalQuotes();
           Category = (string)(ApplicationKey?.GetValue(KEY_CATEGORY) ?? DEFAULT_CATEGORY);
           WithConfirmation = ((string)(ApplicationKey?.GetValue(KEY_WITH_CONFIRMATION) ?? DEFAULT_WITH_CONFIRMATION)).ToBool();
+          CleanupSentMessages = ((string)(ApplicationKey?.GetValue(KEY_CLEANUP_SENT_MESSAGES) ?? DEFAULT_CLEANUP_SENT_MESSAGES)).ToBool();
         }
         if (LogType == ELogType.File) {
           string LogFilePath = Path.GetDirectoryName(LogFilename);
@@ -93,18 +88,20 @@ namespace SendMultipleMessagesTogether {
             using (RegistryKey NewApplicationKey = HKCU.CreateSubKey(KeyName)) {
               NewApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
               NewApplicationKey.SetValue(KEY_PREFIX, Prefix);
-              NewApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
+              NewApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
               NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
               NewApplicationKey.SetValue(KEY_CATEGORY, Category);
-              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
+              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation.ToString());
+              NewApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages.ToString());
             }
           } else {
             ApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
             ApplicationKey.SetValue(KEY_PREFIX, Prefix);
-            ApplicationKey.SetValue(KEY_LOG_TYPE, LogTypeString);
+            ApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
             ApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
             ApplicationKey.SetValue(KEY_CATEGORY, Category);
-            ApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
+            ApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation.ToString());
+            ApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages.ToString());
           }
         }
         return true;

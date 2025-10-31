@@ -34,6 +34,7 @@ namespace SendMultipleMessagesTogether {
       txtCategory.Text = Parameters.Category;
       txtLogFilename.Text = Parameters.LogFilename;
       chkAskConfirmation.Checked = Parameters.WithConfirmation;
+      chkCleanupSentMessages.Checked = Parameters.CleanupSentMessages;
 
     }
   }

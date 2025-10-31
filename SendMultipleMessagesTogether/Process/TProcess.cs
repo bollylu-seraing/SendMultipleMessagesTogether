@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace SendMultipleMessagesTogether.Process {
 
     private readonly Outlook.Application Application;
     private Explorer ActiveExplorer => Application?.ActiveExplorer() ?? throw new ApplicationException("ActiveExplorer is (null)");
+    private MAPIFolder SentMailFolder => Application?.Session?.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail) ?? throw new ApplicationException("Application is (null)");
+
     private readonly ILogger Logger;
     private readonly IParameters Parameters;
 
@@ -54,14 +57,21 @@ namespace SendMultipleMessagesTogether.Process {
           }
 
           SendMailAsAttachment(MailItemItem);
-          MarkAsIndicated(MailItemItem);
-
           Logger.LogInfo($"Processed {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}");
+
+          MarkAsIndicatedAndSave(MailItemItem);
+          Logger.LogInfo($"Original {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} is marked {Parameters.Category.WithQuotes()}");
+
 
         } catch (System.Exception ex) {
           Logger.LogError($"Error processing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}", ex);
           return false;
         }
+      }
+
+      if (Parameters.CleanupSentMessages) {
+        CleanupSentItems();
+        Logger.LogInfo("SentItems has been cleaned up");
       }
 
       return true;
@@ -73,6 +83,7 @@ namespace SendMultipleMessagesTogether.Process {
       NewMailItem.To = Parameters.Recipient;
       NewMailItem.Attachments.Add(MailItemItem, OlAttachmentType.olByValue, Type.Missing, Type.Missing);
       NewMailItem.Body = string.Empty;
+      MarkAsIndicated(NewMailItem);
       NewMailItem.Send();
     }
 
@@ -92,7 +103,29 @@ namespace SendMultipleMessagesTogether.Process {
       List<string> CurrentCategories = mailItem.Categories?.Trim()?.Split(CATEGORIES_SPLIT_SEPARATOR)?.ToList() ?? new List<string>();
       CurrentCategories.Add(Parameters.Category);
       mailItem.Categories = string.Join(CATEGORIES_JOIN_SEPARATOR, CurrentCategories);
+    }
+
+    private void MarkAsIndicatedAndSave(MailItem mailItem) {
+      MarkAsIndicated(mailItem);
       mailItem.Save();
+    }
+
+    private void CleanupSentItems() {
+      
+      int Counter = 0;
+      foreach (MailItem MailItemItem in SentMailFolder.Items.OfType<MailItem>()) {
+        if (IsIndicated(MailItemItem)) {
+          Logger.LogInfo($"Removing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} from SentItems");
+          try {
+            MailItemItem.Delete();
+            Logger.LogInfo("  OK");
+            Counter++;
+          } catch (System.Exception ex) {
+            Logger.LogError("  Unable to remove message", ex);
+          }
+        }
+      }
+      Logger.LogInfo($"Total {Counter} message(s) removed from SentItems");
     }
   }
 }

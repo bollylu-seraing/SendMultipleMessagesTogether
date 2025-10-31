@@ -7,17 +7,19 @@ namespace SendMultipleMessagesTogether {
     /// </summary>
     private System.ComponentModel.IContainer components = null;
 
-    Label lblRecipient = new Label();
-    Label lblPrefix = new Label();
-    Label lblCategory = new Label();
-    Label lblLogFilename = new Label();
-    Label lblAskConfirmation = new Label();
+    Label lblRecipient = new Label() { Text = "Récipient :" };
+    Label lblPrefix = new Label() { Text = "Préfixe :" };
+    Label lblCategory = new Label() { Text = "Catégorie :" };
+    Label lblLogFilename = new Label() { Text = "Fichier log :" };
+    Label lblAskConfirmation = new Label() { Text = "Confirmation pour indication" };
+    Label lblCleanupSentMessage = new Label() { Text = "Nettoyer les messages envoyés" };
 
     TextBox txtRecipient = new TextBox();
     TextBox txtPrefix = new TextBox();
     TextBox txtCategory = new TextBox();
     TextBox txtLogFilename = new TextBox();
     CheckBox chkAskConfirmation = new CheckBox();
+    CheckBox chkCleanupSentMessages = new CheckBox();
 
     Button btnOk = new Button();
     Button btnCancel = new Button();
@@ -57,24 +59,22 @@ namespace SendMultipleMessagesTogether {
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Paramètres Indicateur IA.Docs";
       this.Load += new System.EventHandler(this.Form1_Load);
-      
-      this.lblRecipient.Text = "Récipient :";
+
       this.lblRecipient.Top = 20;
-      this.lblPrefix.Text = "Préfixe :";
       this.lblPrefix.Top = lblRecipient.Bottom + 20;
-      this.lblCategory.Text = "Catégorie :";
       this.lblCategory.Top = lblPrefix.Bottom + 20;
-      this.lblLogFilename.Text = "Fichier log :";
       this.lblLogFilename.Top = lblCategory.Bottom + 20;
-      this.lblAskConfirmation.Text = "Confirmation pour indication :";
       this.lblAskConfirmation.Width = 200;
       this.lblAskConfirmation.Top = lblLogFilename.Bottom + 20;
+      this.lblCleanupSentMessage.Width = 200;
+      this.lblCleanupSentMessage.Top = lblAskConfirmation.Bottom + 20;
 
       this.lblRecipient.Left = 10;
       this.lblPrefix.Left = 10;
       this.lblCategory.Left = 10;
       this.lblLogFilename.Left = 10;
       this.lblAskConfirmation.Left = 10;
+      this.lblCleanupSentMessage.Left = 10;
 
       this.txtRecipient.Left = lblRecipient.Right + 10;
       this.txtRecipient.Top = lblRecipient.Top;
@@ -90,18 +90,22 @@ namespace SendMultipleMessagesTogether {
       this.txtLogFilename.Width = 500;
       this.chkAskConfirmation.Left = lblAskConfirmation.Right + 10;
       this.chkAskConfirmation.Top = lblAskConfirmation.Top;
+      this.chkCleanupSentMessages.Left = lblCleanupSentMessage.Right + 10;
+      this.chkCleanupSentMessages.Top = lblCleanupSentMessage.Top;
+
+      Control LastControl = lblCleanupSentMessage;
 
       btnOk.Text = "OK";
       btnOk.Left = 10;
-      btnOk.Top = lblAskConfirmation.Bottom + 20;
-      
+      btnOk.Top = LastControl.Bottom + 20;
+
       btnCancel.Text = "Annuler";
       btnCancel.Left = btnOk.Right + 10;
-      btnCancel.Top = lblAskConfirmation.Bottom + 20;
+      btnCancel.Top = LastControl.Bottom + 20;
 
       btnResetDefault.Text = "Réinitialiser";
       btnResetDefault.Left = btnCancel.Right + 10;
-      btnResetDefault.Top = lblAskConfirmation.Bottom + 20;
+      btnResetDefault.Top = LastControl.Bottom + 20;
       btnResetDefault.BackColor = System.Drawing.Color.LightCoral;
       btnResetDefault.ForeColor = System.Drawing.Color.White;
 
@@ -116,7 +120,8 @@ namespace SendMultipleMessagesTogether {
           Prefix = txtPrefix.Text,
           Category = txtCategory.Text,
           LogFilename = txtLogFilename.Text,
-          WithConfirmation = chkAskConfirmation.Checked
+          WithConfirmation = chkAskConfirmation.Checked,
+          CleanupSentMessages = chkCleanupSentMessages.Checked
         };
         this.DialogResult = DialogResult.OK;
         this.Close();
@@ -131,25 +136,31 @@ namespace SendMultipleMessagesTogether {
         txtCategory.Text = AParameters.DEFAULT_CATEGORY;
         txtLogFilename.Text = AParameters.DEFAULT_LOG_FULL_FILENAME;
         chkAskConfirmation.Checked = AParameters.DEFAULT_WITH_CONFIRMATION;
+        chkCleanupSentMessages.Checked = AParameters.DEFAULT_CLEANUP_SENT_MESSAGES;
       };
 
       btnCancel.Click += (s, ev) => {
         this.DialogResult = DialogResult.Cancel;
         this.Close();
       };
+      
       this.Controls.Add(lblRecipient);
       this.Controls.Add(lblPrefix);
       this.Controls.Add(lblCategory);
       this.Controls.Add(lblLogFilename);
       this.Controls.Add(lblAskConfirmation);
+      this.Controls.Add(lblCleanupSentMessage);
+
       this.Controls.Add(btnOk);
       this.Controls.Add(btnCancel);
       this.Controls.Add(btnResetDefault);
+      
       this.Controls.Add(txtRecipient);
       this.Controls.Add(txtPrefix);
       this.Controls.Add(txtCategory);
       this.Controls.Add(txtLogFilename);
       this.Controls.Add(chkAskConfirmation);
+      this.Controls.Add(chkCleanupSentMessages);
 
       this.Width = txtLogFilename.Right + 40;
       this.Height = btnOk.Bottom + 60;

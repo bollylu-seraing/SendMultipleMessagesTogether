@@ -87,13 +87,13 @@ namespace SendMultipleMessagesTogether {
     }
 
     public Image GetImage(Office.IRibbonControl control) {
-      Logger.LogInfo($"GetImage called for {control.Id}");
+      // Logger.LogInfo($"GetImage called for {control.Id}");
       switch (control.Id) {
         case INDICATEUR_BUTTON_ID:
-          Logger.LogInfo("Returning image for Indicateur");
+          //Logger.LogInfo("Returning image for Indicateur");
           return SendMultipleMessagesTogether.Properties.Resources.letter;
         case EDIT_INDICATEUR_PARAMETERS_BUTTON_ID:
-          Logger.LogInfo("Returning image for IndicateurParams");
+          //Logger.LogInfo("Returning image for IndicateurParams");
           return SendMultipleMessagesTogether.Properties.Resources.parameters.ToBitmap();
         default:
           Logger.LogError($"Unknown control Id: {control.Id}");

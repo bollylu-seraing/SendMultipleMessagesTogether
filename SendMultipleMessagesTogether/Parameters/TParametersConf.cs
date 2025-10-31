@@ -40,6 +40,8 @@ namespace SendMultipleMessagesTogether {
           writer.WriteLine($"{KEY_LOG_TYPE}{SEPARATOR}{DEFAULT_LOG_TYPE}");
           writer.WriteLine($"{KEY_LOG_FILENAME}{SEPARATOR}{DEFAULT_LOG_FULL_FILENAME.WithQuotes()}");
           writer.WriteLine($"{KEY_CATEGORY}{SEPARATOR}{DEFAULT_CATEGORY.WithQuotes()}");
+          writer.WriteLine($"{KEY_WITH_CONFIRMATION}{SEPARATOR}{DEFAULT_WITH_CONFIRMATION}");
+          writer.WriteLine($"{KEY_CLEANUP_SENT_MESSAGES}{SEPARATOR}{DEFAULT_CLEANUP_SENT_MESSAGES}");
         }
         return true;
       } catch (Exception ex) {
@@ -47,7 +49,7 @@ namespace SendMultipleMessagesTogether {
         return false;
       }
     }
-    
+
     public override bool Read() {
       if (!File.Exists(ConfigFile)) {
         Logger.LogError($"Configuration file {ConfigFile.WithQuotes()} does not exist.");
@@ -72,13 +74,23 @@ namespace SendMultipleMessagesTogether {
                 Prefix = ParameterValue;
                 break;
               case KEY_LOG_TYPE:
-                LogTypeString = ParameterValue.Trim();
+                try {
+                  LogType = (ELogType)Enum.Parse(typeof(ELogType), ParameterValue.Trim());
+                } catch {
+                  LogType = DEFAULT_LOG_TYPE;
+                }
                 break;
               case KEY_LOG_FILENAME:
                 LogFilename = ParameterValue.RemoveExternalQuotes();
                 break;
               case KEY_CATEGORY:
                 Category = ParameterValue;
+                break;
+              case KEY_WITH_CONFIRMATION:
+                WithConfirmation = ParameterValue.Trim().ToBool();
+                break;
+              case KEY_CLEANUP_SENT_MESSAGES:
+                CleanupSentMessages = ParameterValue.Trim().ToBool();
                 break;
               default:
                 Logger.LogWarning($"Unknown parameter {ParameterName.WithQuotes()} in configuration file {ConfigFile.WithQuotes()}");
@@ -111,9 +123,11 @@ namespace SendMultipleMessagesTogether {
           writer.WriteLine("# Configuration file for SendMultipleMessagesTogether");
           writer.WriteLine($"{KEY_RECIPIENT}{SEPARATOR}{Recipient.WithQuotes()}");
           writer.WriteLine($"{KEY_PREFIX}{SEPARATOR}{Prefix.WithQuotes()}");
-          writer.WriteLine($"{KEY_LOG_TYPE}{SEPARATOR}{LogTypeString.WithQuotes()}");
+          writer.WriteLine($"{KEY_LOG_TYPE}{SEPARATOR}{LogType}");
           writer.WriteLine($"{KEY_LOG_FILENAME}{SEPARATOR}{LogFilename.Trim().WithQuotes()}");
           writer.WriteLine($"{KEY_CATEGORY}{SEPARATOR}{Category.WithQuotes()}");
+          writer.WriteLine($"{KEY_WITH_CONFIRMATION}{SEPARATOR}{WithConfirmation}");
+          writer.WriteLine($"{KEY_CLEANUP_SENT_MESSAGES}{SEPARATOR}{CleanupSentMessages}");
         }
         return true;
       } catch (Exception ex) {
