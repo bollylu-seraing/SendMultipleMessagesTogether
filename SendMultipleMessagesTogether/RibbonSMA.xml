@@ -2,10 +2,10 @@
 <customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui"
           onLoad="Ribbon_Load"
           >
-  <ribbon>
+  <ribbon >
     <tabs>
-      <tab idMso="TabMail">
-        <group id="MyGroup"
+      <tab idMso="TabMail" >
+        <group id="GroupIADocs"
                label="IA.Docs"
                autoScale="true"
                centerVertically="true"
@@ -16,10 +16,20 @@
                   enabled="true"
                   getImage="GetImage"
                   size="large"
-                  onAction="ProcessMessages_Click"
+                  onAction="SendToIndicator_Click"
                   label="Indicateur"
-                  screentip="Envoyer le(s) message(s) sélectionné(s) à l'indicateur" 
+                  screentip="Envoyer le(s) message(s) sélectionné(s) à l'indicateur"
                   />
+          <button id="CleanupSentItems"
+                  description="Nettoyer les messages envoyés à l'indicateur"
+                  screentip="Nettoyer les messages envoyés à l'indicateur"
+                  enabled="true"
+                  getImage="GetImage"
+                  size="normal"
+                  onAction="CleanupSentItems_Click"
+                  label="Nettoyage indicateur"
+                  />
+
           <button id="IndicateurParam"
                   description="Voir et éditer les paramètres"
                   screentip="Voir et éditer les paramètres"
@@ -27,8 +37,9 @@
                   getImage="GetImage"
                   size="normal"
                   onAction="EditParameters_Click"
-                  label="Paramètres Indicateur"
+                  label="Paramètres indicateur"
                   />
+
         </group>
       </tab>
     </tabs>

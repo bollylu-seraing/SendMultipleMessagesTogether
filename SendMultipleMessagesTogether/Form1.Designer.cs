@@ -12,7 +12,7 @@ namespace SendMultipleMessagesTogether {
     Label lblCategory = new Label() { Text = "Catégorie :" };
     Label lblLogFilename = new Label() { Text = "Fichier log :" };
     Label lblAskConfirmation = new Label() { Text = "Confirmation pour indication" };
-    Label lblCleanupSentMessage = new Label() { Text = "Nettoyer les messages envoyés" };
+    Label lblCleanupSentMessage = new Label() { Text = "Nettoyer les messages indicatés dans les éléments envoyés" };
 
     TextBox txtRecipient = new TextBox();
     TextBox txtPrefix = new TextBox();
@@ -90,6 +90,7 @@ namespace SendMultipleMessagesTogether {
       this.txtLogFilename.Width = 500;
       this.chkAskConfirmation.Left = lblAskConfirmation.Right + 10;
       this.chkAskConfirmation.Top = lblAskConfirmation.Top;
+
       this.chkCleanupSentMessages.Left = lblCleanupSentMessage.Right + 10;
       this.chkCleanupSentMessages.Top = lblCleanupSentMessage.Top;
 

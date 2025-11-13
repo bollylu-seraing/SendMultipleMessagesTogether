@@ -24,6 +24,8 @@ namespace SendMultipleMessagesTogether {
 
     private const string INDICATEUR_BUTTON_ID = "Indicateur";
     private const string EDIT_INDICATEUR_PARAMETERS_BUTTON_ID = "IndicateurParam";
+    private const string CLEANUP_SENT_ITEMS_BUTTON_ID = "CleanupSentItems";
+
     private ILogger Logger => ThisAddIn.Logger;
 
     #region --- Constructor ---------------------------------------------------
@@ -47,9 +49,14 @@ namespace SendMultipleMessagesTogether {
       this.ribbon = ribbonUI;
     }
 
-    public void ProcessMessages_Click(Office.IRibbonControl control) {
+    public void SendToIndicator_Click(Office.IRibbonControl control) {
       IProcess Process = new TProcess(Globals.ThisAddIn.Application, ThisAddIn.Logger, ThisAddIn.Parameters);
-      Process.Execute();
+      Process.SendToIndicator();
+    }
+
+    public void CleanupSentItems_Click(Office.IRibbonControl control) {
+      IProcess Process = new TProcess(Globals.ThisAddIn.Application, ThisAddIn.Logger, ThisAddIn.Parameters);
+      Process.CleanupSentItems();
     }
 
     public void EditParameters_Click(Office.IRibbonControl control) {
@@ -95,6 +102,10 @@ namespace SendMultipleMessagesTogether {
         case EDIT_INDICATEUR_PARAMETERS_BUTTON_ID:
           //Logger.LogInfo("Returning image for IndicateurParams");
           return SendMultipleMessagesTogether.Properties.Resources.parameters.ToBitmap();
+        case CLEANUP_SENT_ITEMS_BUTTON_ID:
+          //Logger.LogInfo("Returning image for CleanupSentItems");
+          return SendMultipleMessagesTogether.Properties.Resources.parameters.ToBitmap();
+        
         default:
           Logger.LogError($"Unknown control Id: {control.Id}");
           return null;

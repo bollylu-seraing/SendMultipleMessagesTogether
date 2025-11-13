@@ -34,7 +34,7 @@ namespace SendMultipleMessagesTogether.Process {
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-    public bool Execute() {
+    public bool SendToIndicator() {
       List<MailItem> SelectedMailItems = ActiveExplorer.Selection.OfType<MailItem>().ToList();
 
       if (!SelectedMailItems.Any()) {
@@ -77,6 +77,30 @@ namespace SendMultipleMessagesTogether.Process {
       return true;
     }
 
+    public bool CleanupSentItems() {
+
+      try {
+        int Counter = 0;
+        foreach (MailItem MailItemItem in SentMailFolder.Items.OfType<MailItem>()) {
+          if (IsIndicated(MailItemItem)) {
+            Logger.LogInfo($"Removing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} from SentItems");
+            try {
+              MailItemItem.Delete();
+              Logger.LogInfo("  OK");
+              Counter++;
+            } catch (System.Exception ex) {
+              Logger.LogError("  Unable to remove message", ex);
+            }
+          }
+        }
+        Logger.LogInfo($"Total {Counter} message(s) removed from SentItems");
+        return true;
+      } catch (System.Exception ex) {
+        Logger.LogError("Unable to remove messages from SentItems", ex);
+        return false;
+      }
+    }
+
     private void SendMailAsAttachment(MailItem MailItemItem) {
       MailItem NewMailItem = (MailItem)Application.CreateItem(OlItemType.olMailItem);
       NewMailItem.Subject = $"{Parameters.Prefix}{MailItemItem.Subject ?? ERROR_SUBJECT_MISSING}";
@@ -110,22 +134,6 @@ namespace SendMultipleMessagesTogether.Process {
       mailItem.Save();
     }
 
-    private void CleanupSentItems() {
-      
-      int Counter = 0;
-      foreach (MailItem MailItemItem in SentMailFolder.Items.OfType<MailItem>()) {
-        if (IsIndicated(MailItemItem)) {
-          Logger.LogInfo($"Removing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} from SentItems");
-          try {
-            MailItemItem.Delete();
-            Logger.LogInfo("  OK");
-            Counter++;
-          } catch (System.Exception ex) {
-            Logger.LogError("  Unable to remove message", ex);
-          }
-        }
-      }
-      Logger.LogInfo($"Total {Counter} message(s) removed from SentItems");
-    }
+
   }
 }

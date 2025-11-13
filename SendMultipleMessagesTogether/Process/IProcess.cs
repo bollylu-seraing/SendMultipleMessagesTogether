@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SendMultipleMessagesTogether.Process {
   public interface IProcess {
-    bool Execute();
-    Task<bool> ExecuteAsync();
+    bool SendToIndicator();
+    bool CleanupSentItems();
   }
 }

@@ -35,8 +35,8 @@ namespace SendMultipleMessagesTogether {
               NewApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
               NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
               NewApplicationKey.SetValue(KEY_CATEGORY, Category);
-              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation);
-              NewApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages);
+              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation.ToString());
+              NewApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages.ToString());
             }
           }
         }
@@ -59,8 +59,8 @@ namespace SendMultipleMessagesTogether {
           LogType = (ELogType)Enum.Parse(typeof(ELogType), (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE.ToString()));
           LogFilename = ((string)(ApplicationKey?.GetValue(KEY_LOG_FILENAME) ?? DEFAULT_LOG_FULL_FILENAME)).RemoveExternalQuotes();
           Category = (string)(ApplicationKey?.GetValue(KEY_CATEGORY) ?? DEFAULT_CATEGORY);
-          WithConfirmation = ((string)(ApplicationKey?.GetValue(KEY_WITH_CONFIRMATION) ?? DEFAULT_WITH_CONFIRMATION)).ToBool();
-          CleanupSentMessages = ((string)(ApplicationKey?.GetValue(KEY_CLEANUP_SENT_MESSAGES) ?? DEFAULT_CLEANUP_SENT_MESSAGES)).ToBool();
+          WithConfirmation = ((string)(ApplicationKey?.GetValue(KEY_WITH_CONFIRMATION) ?? DEFAULT_WITH_CONFIRMATION.ToString())).ToBool();
+          CleanupSentMessages = ((string)(ApplicationKey?.GetValue(KEY_CLEANUP_SENT_MESSAGES) ?? DEFAULT_CLEANUP_SENT_MESSAGES.ToString())).ToBool();
         }
         if (LogType == ELogType.File) {
           string LogFilePath = Path.GetDirectoryName(LogFilename);
