@@ -60,7 +60,7 @@ namespace SendMultipleMessagesTogether {
     }
 
     public void EditParameters_Click(Office.IRibbonControl control) {
-      using (Form1 ParametersForm = new Form1(ThisAddIn.Parameters)) {
+      using (FormParams ParametersForm = new FormParams(ThisAddIn.Parameters)) {
         DialogResult Result =  ParametersForm.ShowDialog();
         if (Result == DialogResult.OK) {
           ParametersForm.NewParameters.Save();

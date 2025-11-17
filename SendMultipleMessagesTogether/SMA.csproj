@@ -213,11 +213,17 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="FormLog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="FormLog.Designer.cs">
+      <DependentUpon>FormLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormParams.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormParams.Designer.cs">
+      <DependentUpon>FormParams.cs</DependentUpon>
     </Compile>
     <Compile Include="Logger\ELogType.cs" />
     <Compile Include="Logger\TConsoleLogger.cs" />
@@ -235,8 +241,11 @@
     </Compile>
     <Compile Include="RibbonSMA.cs" />
     <Compile Include="_Support\StringExtensions.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="FormLog.resx">
+      <DependentUpon>FormLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormParams.resx">
+      <DependentUpon>FormParams.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

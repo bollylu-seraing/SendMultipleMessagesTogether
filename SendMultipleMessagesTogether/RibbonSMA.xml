@@ -33,6 +33,14 @@
 							size="normal"
 							onAction="EditParameters_Click"
 							label="Paramètres indicateur" />
+					<button id="IndicateurLog"
+							description="Voir le fichier log"
+							screentip="Voir le fichier log"
+							enabled="true"
+							getImage="GetImage"
+							size="normal"
+							onAction="DisplayLog_Click"
+							label="Paramètres indicateur" />
 
 				</group>
 			</tab>

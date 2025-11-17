@@ -14,8 +14,8 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 namespace SendMultipleMessagesTogether {
   public partial class ThisAddIn {
 
-    public const string DEFAULT_APPLICATION_NAME = "SendMultipleMessagesTogether";
-    public static Version APPLICATION_VERSION = new Version(1, 2);
+    public const string DEFAULT_APPLICATION_NAME = "SMA";
+    public static Version APPLICATION_VERSION = new Version(1, 3);
 
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);
@@ -46,7 +46,7 @@ namespace SendMultipleMessagesTogether {
     }
 
     private void ThisAddIn_Shutdown(object sender, System.EventArgs e) {
-      Logger.LogInfo($"SMMT v{APPLICATION_VERSION} exited gracefuly");
+      Logger.LogInfo($"SMA v{APPLICATION_VERSION} exited gracefuly");
     }
 
 
