@@ -24,8 +24,8 @@
     <ProjectGuid>{28D95319-2ADD-4680-9671-B3CEC6C98E52}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <RootNamespace>SendMultipleMessagesTogether</RootNamespace>
-    <AssemblyName>SendMultipleMessagesTogether</AssemblyName>
+    <RootNamespace>SMA</RootNamespace>
+    <AssemblyName>SMA</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <DefineConstants>VSTO40;UseOfficeInterop</DefineConstants>
     <ResolveComReferenceSilent>true</ResolveComReferenceSilent>
@@ -42,7 +42,7 @@
     <ProductName>SendMultipleMessagesTogether</ProductName>
     <PublisherName />
     <SupportUrl />
-    <FriendlyName>SendMultipleMessagesTogether</FriendlyName>
+    <FriendlyName>SMA</FriendlyName>
     <OfficeApplicationDescription />
     <LoadBehavior>3</LoadBehavior>
   </PropertyGroup>
