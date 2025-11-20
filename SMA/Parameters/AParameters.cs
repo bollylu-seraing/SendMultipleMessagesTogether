@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SendMultipleMessagesTogether {
+using SMA.Support;
+
+namespace SMA {
   public abstract class AParameters : IParameters {
 
     protected const string KEY_PREFIX = "Prefix";
@@ -77,5 +79,17 @@ namespace SendMultipleMessagesTogether {
     public string Category { get; set; } = DEFAULT_CATEGORY;
     public bool WithConfirmation { get; set; } = DEFAULT_WITH_CONFIRMATION;
     public bool CleanupSentMessages { get; set; } = DEFAULT_CLEANUP_SENT_MESSAGES;
+
+    public override string ToString() {
+      StringBuilder SB = new StringBuilder();
+      SB.AppendLine($"LogType: {LogType}");
+      SB.AppendLine($"LogFilename: {LogFilename.WithQuotes()}");
+      SB.AppendLine($"Recipient: {Recipient.WithQuotes()}");
+      SB.AppendLine($"Prefix: {Prefix.WithQuotes()}");
+      SB.AppendLine($"Category: {Category.WithQuotes()}");
+      SB.AppendLine($"WithConfirmation: {WithConfirmation}");
+      SB.AppendLine($"CleanupSentMessages: {CleanupSentMessages}");
+      return SB.ToString();
+    }
   }
 }

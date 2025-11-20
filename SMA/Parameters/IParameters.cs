@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   public interface IParameters {
 
     bool Init();

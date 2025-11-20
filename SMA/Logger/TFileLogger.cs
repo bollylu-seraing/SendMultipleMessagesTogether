@@ -1,4 +1,5 @@
-﻿using SendMultipleMessagesTogether.Support;
+﻿using SMA.Support;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   internal class TFileLogger : ALogger {
     readonly string Filename;
 
@@ -34,6 +35,19 @@ namespace SendMultipleMessagesTogether {
         }
       } catch {
         MessageBox.Show($"Could not write to log file {Filename.WithQuotes()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    public override void Clear() {
+      File.Delete(Filename);
+      base.Clear();
+    }
+
+    public override string GetLogContent() {
+      try {
+        return File.ReadAllText(Filename, Encoding.Default);
+      } catch (Exception ex) {
+        return ex.Message;
       }
     }
   }

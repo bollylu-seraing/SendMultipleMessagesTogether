@@ -9,12 +9,12 @@ using System.Windows.Forms;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.Office.Tools.Ribbon;
 
-using SendMultipleMessagesTogether.Support;
+using SMA.Support;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
 
 
-namespace SendMultipleMessagesTogether.Process {
+namespace SMA.Process {
   public class TProcess : IProcess {
 
     const string ERROR_SUBJECT_MISSING = "[Subject is missing]";

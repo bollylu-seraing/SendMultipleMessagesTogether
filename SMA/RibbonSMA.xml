@@ -1,15 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui"
-          onLoad="Ribbon_Load">
-	<ribbon >
-		<tabs>
-			<tab id="TabSeraing" insertAfterMso="TabMail" >
-				<group id="GroupIADocs"
+          onLoad="Ribbon_Load"
+          >
+  <ribbon>
+    <tabs>
+      <tab id="TabSeraing" insertAfterMso="TabMail" label="Seraing"  >
+        <group id="GroupIADocs"
 					   label="IA.Docs"
 					   autoScale="true"
 					   centerVertically="true"
-					   screentip="Extensions pour IA.Docs">
-					<button id="Indicateur"
+					   screentip="Extensions pour IA.Docs" getVisible="GetTabVisibility"
+              >
+          <button id="Indicateur"
 							description="Envoyer le(s) message(s) sélectionné(s) à l'indicateur"
 							enabled="true"
 							getImage="GetImage"
@@ -17,7 +19,7 @@
 							onAction="SendToIndicator_Click"
 							label="Indicateur"
 							screentip="Envoyer le(s) message(s) sélectionné(s) à l'indicateur" />
-					<button id="CleanupSentItems"
+          <button id="CleanupSentItems"
 							description="Nettoyer les messages envoyés à l'indicateur"
 							screentip="Nettoyer les messages envoyés à l'indicateur"
 							enabled="true"
@@ -25,7 +27,7 @@
 							size="normal"
 							onAction="CleanupSentItems_Click"
 							label="Nettoyage indicateur" />
-					<button id="IndicateurParam"
+          <button id="IndicateurParam"
 							description="Voir et éditer les paramètres"
 							screentip="Voir et éditer les paramètres"
 							enabled="true"
@@ -33,18 +35,18 @@
 							size="normal"
 							onAction="EditParameters_Click"
 							label="Paramètres indicateur" />
-					<button id="IndicateurLog"
+          <button id="IndicateurLog"
 							description="Voir le fichier log"
 							screentip="Voir le fichier log"
 							enabled="true"
 							getImage="GetImage"
 							size="normal"
-							onAction="DisplayLog_Click"
-							label="Paramètres indicateur" />
+							onAction="ViewLog_Click"
+							label="Voir fichier log" />
 
-				</group>
-			</tab>
-		</tabs>
-	</ribbon>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
 </customUI>
 

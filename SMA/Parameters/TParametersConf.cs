@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SendMultipleMessagesTogether.Support;
+using SMA.Support;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   public class TParametersConf : AParameters {
 
     private const string SEPARATOR = "=";

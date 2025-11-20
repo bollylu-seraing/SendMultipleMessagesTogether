@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 using Microsoft.Win32;
 
-using SendMultipleMessagesTogether.Support;
+using SMA.Support;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   public class TParametersRegistry : AParameters {
 
     private static readonly string KeyName = $@"Software\{ThisAddIn.DEFAULT_APPLICATION_NAME}";

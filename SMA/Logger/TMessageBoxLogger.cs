@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   internal class TMessageBoxLogger : ALogger {
     public override void Log(string message) {
       MessageBox.Show(message, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -25,6 +25,14 @@ namespace SendMultipleMessagesTogether {
 
     public override void LogError(string message) {
       MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
+    public override void Clear() {
+      base.Clear();
+    }
+
+    public override string GetLogContent() {
+      return ""; // Not implemented
     }
   }
 }

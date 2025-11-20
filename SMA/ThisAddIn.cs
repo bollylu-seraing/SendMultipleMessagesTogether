@@ -6,12 +6,12 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
-using SendMultipleMessagesTogether.Support;
+using SMA.Support;
 
 using Office = Microsoft.Office.Core;
 using Outlook = Microsoft.Office.Interop.Outlook;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   public partial class ThisAddIn {
 
     public const string DEFAULT_APPLICATION_NAME = "SMA";
@@ -41,7 +41,7 @@ namespace SendMultipleMessagesTogether {
         return;
       }
 
-      Logger.LogInfo($"SMMT v{APPLICATION_VERSION} started");
+      Logger.LogInfo($"SMA v{APPLICATION_VERSION} started");
 
     }
 

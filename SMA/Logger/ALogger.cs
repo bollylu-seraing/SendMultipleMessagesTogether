@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SendMultipleMessagesTogether {
+namespace SMA {
   internal abstract class ALogger : ILogger {
 
     public abstract void Log(string message);
@@ -24,6 +24,9 @@ namespace SendMultipleMessagesTogether {
       Log($"Error : {message}");
     }
 
-
+    public virtual void Clear() {
+      LogInfo("Clear log");
+    }
+    public abstract string GetLogContent();
   }
 }

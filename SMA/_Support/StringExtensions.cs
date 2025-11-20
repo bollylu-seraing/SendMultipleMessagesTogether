@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SendMultipleMessagesTogether.Support {
+namespace SMA.Support {
   public static class StringExtensions {
 
     #region --- Left --------------------------------------------

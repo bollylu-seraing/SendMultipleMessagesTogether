@@ -1,5 +1,8 @@
-﻿using SendMultipleMessagesTogether.Process;
-using SendMultipleMessagesTogether.Support;
+﻿using Microsoft.Office.Interop.Outlook;
+
+using SMA.Process;
+using SMA.Support;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,23 +13,30 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-using Office = Microsoft.Office.Core;
 
-namespace SendMultipleMessagesTogether {
+using Office = Microsoft.Office.Core;
+using Outlook = Microsoft.Office.Interop.Outlook;
+
+
+namespace SMA {
   [ComVisible(true)]
   public class RibbonSMA : Office.IRibbonExtensibility {
     private Office.IRibbonUI ribbon;
 
     private const string RIBBON_ID = "Microsoft.Outlook.Explorer";
     private const string TAB_ID = "TabMail";
-    private const string GROUP_ID = "SendMultipleMessagesTogetherGroup";
-    private const string BUTTON_ID = "ProcessMessagesButton";
+    private const string GROUP_ID = "SMAGroup";
 
     private const string INDICATEUR_BUTTON_ID = "Indicateur";
     private const string EDIT_INDICATEUR_PARAMETERS_BUTTON_ID = "IndicateurParam";
     private const string CLEANUP_SENT_ITEMS_BUTTON_ID = "CleanupSentItems";
+    private const string INDICATEUR_LOG_ID = "IndicateurLog";
 
     private ILogger Logger => ThisAddIn.Logger;
+
+    private Outlook.Application Application => Globals.ThisAddIn.Application ?? throw new ApplicationException("Application is (null)");
+    private Explorer ActiveExplorer => Application?.ActiveExplorer() ?? throw new ApplicationException("ActiveExplorer is (null)");
+    private MAPIFolder SentMailFolder => Application?.Session?.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail) ?? throw new ApplicationException("Application is (null)");
 
     #region --- Constructor ---------------------------------------------------
     public RibbonSMA() {
@@ -37,7 +47,7 @@ namespace SendMultipleMessagesTogether {
     #region IRibbonExtensibility Members
 
     public string GetCustomUI(string ribbonID) {
-      return GetResourceText("SendMultipleMessagesTogether.RibbonSMA.xml");
+      return GetResourceText("SMA.RibbonSMA.xml");
     }
 
     #endregion
@@ -61,16 +71,24 @@ namespace SendMultipleMessagesTogether {
 
     public void EditParameters_Click(Office.IRibbonControl control) {
       using (FormParams ParametersForm = new FormParams(ThisAddIn.Parameters)) {
-        DialogResult Result =  ParametersForm.ShowDialog();
+        DialogResult Result = ParametersForm.ShowDialog();
         if (Result == DialogResult.OK) {
           ParametersForm.NewParameters.Save();
           ThisAddIn.Parameters.Read();
           Logger.LogInfo("Reading new parameters ...");
-          Logger.LogInfo($"  Recipient: {ThisAddIn.Parameters.Recipient.WithQuotes()}");
-          Logger.LogInfo($"  Prefix: {ThisAddIn.Parameters.Prefix.WithQuotes()}");
-          Logger.LogInfo($"  Category: {ThisAddIn.Parameters.Category.WithQuotes()}");
-          Logger.LogInfo($"  LogFilename: {ThisAddIn.Parameters.LogFilename.WithQuotes()}");
+          foreach (string LineItem in ThisAddIn.Parameters
+            .ToString()
+            .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
+            .Where(x => !string.IsNullOrWhiteSpace(x))) {
+            Logger.LogInfo(LineItem);
+          }
         }
+      }
+    }
+
+    public void ViewLog_Click(Office.IRibbonControl control) {
+      using (FormLog LogForm = new FormLog(ThisAddIn.Parameters)) {
+        LogForm.ShowDialog();
       }
     }
 
@@ -94,25 +112,34 @@ namespace SendMultipleMessagesTogether {
     }
 
     public Image GetImage(Office.IRibbonControl control) {
-      // Logger.LogInfo($"GetImage called for {control.Id}");
+      //Logger.LogInfo($"GetImage called for {control.Id}");
       switch (control.Id) {
         case INDICATEUR_BUTTON_ID:
           //Logger.LogInfo("Returning image for Indicateur");
-          return SendMultipleMessagesTogether.Properties.Resources.letter;
+          return SMA.Properties.Resources.letter;
         case EDIT_INDICATEUR_PARAMETERS_BUTTON_ID:
           //Logger.LogInfo("Returning image for IndicateurParams");
-          return SendMultipleMessagesTogether.Properties.Resources.parameters.ToBitmap();
+          return SMA.Properties.Resources.parameters.ToBitmap();
         case CLEANUP_SENT_ITEMS_BUTTON_ID:
           //Logger.LogInfo("Returning image for CleanupSentItems");
-          return SendMultipleMessagesTogether.Properties.Resources.parameters.ToBitmap();
-        
+          return SMA.Properties.Resources.parameters.ToBitmap();
+        case INDICATEUR_LOG_ID:
+          //Logger.LogInfo("Returning image for IndicateurLog");
+          return SMA.Properties.Resources.parameters.ToBitmap();
+
         default:
           Logger.LogError($"Unknown control Id: {control.Id}");
           return null;
 
       }
-      
+
     }
+
+    public bool GetTabVisibility(Office.IRibbonControl control) {
+      return ActiveExplorer?.CurrentFolder?.DefaultItemType == Outlook.OlItemType.olMailItem;
+
+    }
+
     #endregion
   }
 }
