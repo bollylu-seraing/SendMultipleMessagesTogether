@@ -77,11 +77,16 @@ namespace SMA.Process {
       return true;
     }
 
-    public bool CleanupSentItems() {
+    public int CleanupSentItems() {
 
       try {
         int Counter = 0;
-        foreach (MailItem MailItemItem in SentMailFolder.Items.OfType<MailItem>()) {
+        Items SentMailFolderItems = SentMailFolder.Items;
+        SentMailFolderItems.Sort("[SentOn]", true);
+        int WorkCounter = 0;
+        const int MAX_WORK_ITEMS = 50;
+        foreach (MailItem MailItemItem in SentMailFolderItems.OfType<MailItem>()) {
+          WorkCounter++;
           if (IsIndicated(MailItemItem)) {
             Logger.LogInfo($"Removing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} from SentItems");
             try {
@@ -92,12 +97,15 @@ namespace SMA.Process {
               Logger.LogError("  Unable to remove message", ex);
             }
           }
+          if (WorkCounter >= MAX_WORK_ITEMS) {
+            break;
+          }
         }
         Logger.LogInfo($"Total {Counter} message(s) removed from SentItems");
-        return true;
+        return Counter;
       } catch (System.Exception ex) {
         Logger.LogError("Unable to remove messages from SentItems", ex);
-        return false;
+        return 0;
       }
     }
 

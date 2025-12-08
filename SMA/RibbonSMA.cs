@@ -66,7 +66,12 @@ namespace SMA {
 
     public void CleanupSentItems_Click(Office.IRibbonControl control) {
       IProcess Process = new TProcess(Globals.ThisAddIn.Application, ThisAddIn.Logger, ThisAddIn.Parameters);
-      Process.CleanupSentItems();
+      int RemovedItemsCount = Process.CleanupSentItems();
+      MessageBox.Show(
+        $"Nettoyage terminé. {RemovedItemsCount} élément(s) supprimé(s) du dossier Eléments envoyés.",
+        "Nettoyage des éléments envoyés",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information);
     }
 
     public void EditParameters_Click(Office.IRibbonControl control) {

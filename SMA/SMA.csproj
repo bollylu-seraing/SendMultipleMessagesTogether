@@ -30,13 +30,13 @@
     <DefineConstants>VSTO40;UseOfficeInterop</DefineConstants>
     <ResolveComReferenceSilent>true</ResolveComReferenceSilent>
     <IsWebBootstrapper>False</IsWebBootstrapper>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <BootstrapperEnabled>false</BootstrapperEnabled>
     <PublishUrl>C:\OutlookAddinsSeraing\</PublishUrl>
-    <InstallUrl />
+    <InstallUrl>\\srv-install\software\sma\</InstallUrl>
     <TargetCulture>fr</TargetCulture>
-    <ApplicationVersion>1.3.0.3</ApplicationVersion>
+    <ApplicationVersion>1.3.0.4</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
-    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>0</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
     <ProductName>SMA</ProductName>

@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace SMA.Process {
   public interface IProcess {
     bool SendToIndicator();
-    bool CleanupSentItems();
+    int CleanupSentItems();
   }
 }

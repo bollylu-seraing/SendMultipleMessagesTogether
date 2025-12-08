@@ -15,7 +15,7 @@ namespace SMA {
   public partial class ThisAddIn {
 
     public const string DEFAULT_APPLICATION_NAME = "SMA";
-    public static Version APPLICATION_VERSION = new Version(1, 3);
+    public static Version APPLICATION_VERSION = new Version(1, 3, 5);
 
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);
