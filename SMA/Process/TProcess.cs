@@ -12,7 +12,7 @@ using Microsoft.Office.Tools.Ribbon;
 using SMA.Support;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
-
+using System.Runtime.InteropServices;
 
 namespace SMA.Process {
   public class TProcess : IProcess {
@@ -20,22 +20,29 @@ namespace SMA.Process {
     const string ERROR_SUBJECT_MISSING = "[Subject is missing]";
 
     private readonly Outlook.Application Application;
-    private Explorer ActiveExplorer => Application?.ActiveExplorer() ?? throw new ApplicationException("ActiveExplorer is (null)");
-    private MAPIFolder SentMailFolder => Application?.Session?.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail) ?? throw new ApplicationException("Application is (null)");
+    // be tolerant: return null rather than throwing if no explorer available
+    private Explorer ActiveExplorer => Application?.ActiveExplorer();
+    private MAPIFolder SentMailFolder => Application?.Session == null ? null : Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
 
     private readonly ILogger Logger;
     private readonly IParameters Parameters;
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TProcess(Outlook.Application application, ILogger logger, IParameters parameters) {
-      Application = application ?? throw new ArgumentNullException(nameof(application));
-      Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-      Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+      Application = application;
+      Logger = logger;
+      Parameters = parameters;
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
     public bool SendToIndicator() {
-      List<MailItem> SelectedMailItems = ActiveExplorer.Selection.OfType<MailItem>().ToList();
+      var explorer = ActiveExplorer;
+      if (explorer == null) {
+        Logger.LogError("No active Outlook explorer found. Operation cancelled.");
+        return false;
+      }
+
+      List<MailItem> SelectedMailItems = explorer.Selection.OfType<MailItem>().ToList();
 
       if (!SelectedMailItems.Any()) {
         MessageBox.Show("Vous devez sélectionner un ou plusieurs messages ...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -47,7 +54,6 @@ namespace SMA.Process {
         try {
           if (IsIndicated(MailItemItem)) {
             Logger.LogWarning($"Le message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} est déjà indicaté");
-            //MessageBox.Show($"Le message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} est déjà indicaté", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             continue;
           }
 
@@ -62,10 +68,12 @@ namespace SMA.Process {
           MarkAsIndicatedAndSave(MailItemItem);
           Logger.LogInfo($"Original {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} is marked {Parameters.Category.WithQuotes()}");
 
-
         } catch (System.Exception ex) {
           Logger.LogError($"Error processing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING}", ex);
           return false;
+        } finally {
+          // release the reference to the selected item
+          ReleaseCom(MailItemItem);
         }
       }
 
@@ -77,50 +85,87 @@ namespace SMA.Process {
       return true;
     }
 
+    // rest unchanged (keep COM release improvements you already added)
     public int CleanupSentItems() {
-
+      Logger.LogInfo("Cleaning up SentItems folder ...");
+      int Counter = 0;
       try {
-        int Counter = 0;
-        Items SentMailFolderItems = SentMailFolder.Items;
-        SentMailFolderItems.Sort("[SentOn]", true);
-        int WorkCounter = 0;
-        const int MAX_WORK_ITEMS = 50;
-        foreach (MailItem MailItemItem in SentMailFolderItems.OfType<MailItem>()) {
-          WorkCounter++;
-          if (IsIndicated(MailItemItem)) {
-            Logger.LogInfo($"Removing {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} from SentItems");
+        Items sentItems = null;
+        object currentObj = null;
+        MailItem currentMail = null;
+        MailItem nextMail = null;
+        try {
+          sentItems = SentMailFolder.Items;
+          sentItems.Sort("[SentOn]", true);
+
+          const int MAX_WORK_ITEMS = 50;
+          int workCounter = 0;
+
+          currentObj = sentItems.GetFirst();
+          currentMail = currentObj as MailItem;
+
+          while (currentMail != null && workCounter < MAX_WORK_ITEMS) {
+            workCounter++;
             try {
-              MailItemItem.Delete();
-              Logger.LogInfo("  OK");
-              Counter++;
-            } catch (System.Exception ex) {
-              Logger.LogError("  Unable to remove message", ex);
+              if (IsIndicated(currentMail)) {
+                Logger.LogInfo($"Removing {currentMail.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} from SentItems");
+                try {
+                  currentMail.Delete();
+                  Logger.LogInfo("  OK");
+                  Counter++;
+                } catch (System.Exception ex) {
+                  Logger.LogError("  Unable to remove message", ex);
+                }
+              }
+            } finally {
+              // move to next before releasing current
+              object nextObj = sentItems.GetNext();
+              nextMail = nextObj as MailItem;
+
+              // release current COM object
+              ReleaseCom(currentMail);
+              if (currentObj != null && !Object.ReferenceEquals(currentObj, currentMail)) {
+                ReleaseCom(currentObj);
+              }
+
+              currentObj = nextObj;
+              currentMail = nextMail;
+              nextMail = null;
             }
           }
-          if (WorkCounter >= MAX_WORK_ITEMS) {
-            break;
-          }
+        } finally {
+          ReleaseCom(currentMail);
+          ReleaseCom(nextMail);
+          ReleaseCom(currentObj);
+          ReleaseCom(sentItems);
+          ReleaseCom(SentMailFolder);
         }
+
         Logger.LogInfo($"Total {Counter} message(s) removed from SentItems");
         return Counter;
       } catch (System.Exception ex) {
         Logger.LogError("Unable to remove messages from SentItems", ex);
-        return 0;
+        return Counter;
       }
     }
 
     private void SendMailAsAttachment(MailItem MailItemItem) {
-      MailItem NewMailItem = (MailItem)Application.CreateItem(OlItemType.olMailItem);
-      NewMailItem.Subject = $"{Parameters.Prefix}{MailItemItem.Subject ?? ERROR_SUBJECT_MISSING}";
-      NewMailItem.To = Parameters.Recipient;
-      NewMailItem.Attachments.Add(MailItemItem, OlAttachmentType.olByValue, Type.Missing, Type.Missing);
-      NewMailItem.Body = string.Empty;
-      MarkAsIndicated(NewMailItem);
-      NewMailItem.Send();
-    }
+      MailItem NewMailItem = null;
+      try {
+        NewMailItem = (MailItem)Application.CreateItem(OlItemType.olMailItem);
+        NewMailItem.Subject = $"{Parameters.Prefix}{MailItemItem.Subject ?? ERROR_SUBJECT_MISSING}";
+        NewMailItem.To = Parameters.Recipient;
+        // attach the mail item by value
+        NewMailItem.Attachments.Add(MailItemItem, OlAttachmentType.olByValue, Type.Missing, Type.Missing);
+        NewMailItem.Body = string.Empty;
+        MarkAsIndicated(NewMailItem);
 
-    public Task<bool> ExecuteAsync() {
-      throw new NotImplementedException();
+        // if sending many messages, consider throttling (small delay)
+        NewMailItem.Send();
+      } finally {
+        // release the created mail
+        ReleaseCom(NewMailItem);
+      }
     }
 
     static readonly char[] CATEGORIES_SPLIT_SEPARATOR = new char[] { ',' };
@@ -142,6 +187,22 @@ namespace SMA.Process {
       mailItem.Save();
     }
 
+    private void ReleaseCom(object comObj) {
+      if (comObj == null) {
+        return;
+      }
+      try {
+        if (Marshal.IsComObject(comObj)) {
+          Marshal.FinalReleaseComObject(comObj);
+        }
+      } catch {
+        try {
+          Marshal.ReleaseComObject(comObj);
+        } catch {
+          // swallow any release exceptions to avoid crashing Outlook
+        }
+      }
+    }
 
   }
 }

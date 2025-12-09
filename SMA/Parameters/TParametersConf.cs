@@ -17,7 +17,7 @@ namespace SMA {
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TParametersConf(ILogger logger, string configFile) : base(logger) {
-      ConfigFile = configFile ?? throw new ArgumentNullException(nameof(configFile));
+      ConfigFile = configFile ?? string.Empty;
     }
     public TParametersConf(IParameters parameters) : base(parameters) {
       if (parameters is TParametersConf conf) {
@@ -61,7 +61,8 @@ namespace SMA {
         using (StreamReader reader = new StreamReader(ConfigFile)) {
           TextLine = reader.ReadLine();
           while (TextLine != null) {
-            if (TextLine.TrimStart().StartsWith(COMMENT)) {
+            if (string.IsNullOrWhiteSpace(TextLine) || TextLine.TrimStart().StartsWith(COMMENT)) {
+              TextLine = reader.ReadLine();
               continue;
             }
             string ParameterName = TextLine.Before(SEPARATOR).Trim();
@@ -96,6 +97,7 @@ namespace SMA {
                 Logger.LogWarning($"Unknown parameter {ParameterName.WithQuotes()} in configuration file {ConfigFile.WithQuotes()}");
                 break;
             }
+            TextLine = reader.ReadLine();
           }
         }
         if (LogType == ELogType.File) {

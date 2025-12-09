@@ -15,12 +15,12 @@ namespace SMA {
   public partial class ThisAddIn {
 
     public const string DEFAULT_APPLICATION_NAME = "SMA";
-    public static Version APPLICATION_VERSION = new Version(1, 3, 5);
+    public static Version APPLICATION_VERSION = new Version(1, 3, 8);
 
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);
 
-    public static ILogger DEFAULT_LOGGER => new TMessageBoxLogger();
+    public static ILogger DEFAULT_LOGGER => new TFileLogger(AParameters.DEFAULT_LOG_FULL_FILENAME);
     public static ILogger Logger => Parameters?.Logger ?? DEFAULT_LOGGER;
 
     public static string ApplicationPath { get; private set; } = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -33,16 +33,19 @@ namespace SMA {
     }
 
     private void ThisAddIn_Startup(object sender, System.EventArgs e) {
-      Parameters = new TParametersRegistry();
-      if (!Parameters.Init()) {
-        return;
-      }
-      if (!Parameters.Read()) {
-        return;
-      }
+      try {
+        Parameters = new TParametersRegistry();
+        if (!Parameters.Init()) {
+          return;
+        }
+        if (!Parameters.Read()) {
+          return;
+        }
 
-      Logger.LogInfo($"SMA v{APPLICATION_VERSION} started");
-
+        Logger.LogInfo($"SMA v{APPLICATION_VERSION} started");
+      } catch (Exception ex) {
+        DEFAULT_LOGGER.LogError("Fatal error during startup", ex);
+      }
     }
 
     private void ThisAddIn_Shutdown(object sender, System.EventArgs e) {

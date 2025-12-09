@@ -51,9 +51,9 @@ namespace SMA {
 
     protected AParameters(IParameters parameters) {
       if (parameters == null) {
-        throw new ArgumentNullException(nameof(parameters));
+        ThisAddIn.DEFAULT_LOGGER.LogError("Parameters object is null.");
       }
-      Logger = parameters.Logger ?? throw new ArgumentNullException(nameof(parameters.Logger));
+      Logger = parameters.Logger ?? ThisAddIn.DEFAULT_LOGGER;
       LogType = parameters.LogType;
       LogFilename = parameters.LogFilename;
       Recipient = parameters.Recipient;
@@ -64,7 +64,7 @@ namespace SMA {
     }
 
     protected AParameters(ILogger logger) {
-      Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      Logger = logger ?? ThisAddIn.DEFAULT_LOGGER;
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 

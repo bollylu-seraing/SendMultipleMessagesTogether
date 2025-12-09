@@ -34,13 +34,14 @@ namespace SMA {
 
     private ILogger Logger => ThisAddIn.Logger;
 
-    private Outlook.Application Application => Globals.ThisAddIn.Application ?? throw new ApplicationException("Application is (null)");
-    private Explorer ActiveExplorer => Application?.ActiveExplorer() ?? throw new ApplicationException("ActiveExplorer is (null)");
-    private MAPIFolder SentMailFolder => Application?.Session?.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail) ?? throw new ApplicationException("Application is (null)");
+    // Be tolerant: don't throw during ribbon load
+    private Outlook.Application Application => Globals.ThisAddIn?.Application;
+    private Explorer ActiveExplorer => Application?.ActiveExplorer();
+    private MAPIFolder SentMailFolder => Application?.Session == null ? null : Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
 
     #region --- Constructor ---------------------------------------------------
     public RibbonSMA() {
-
+      // avoid any logging/modal UI here — ribbon may be created before ThisAddIn_Startup
     }
     #endregion ----------------------------------------------------------------
 
@@ -57,6 +58,7 @@ namespace SMA {
 
     public void Ribbon_Load(Office.IRibbonUI ribbonUI) {
       this.ribbon = ribbonUI;
+      // avoid modal logging here
     }
 
     public void SendToIndicator_Click(Office.IRibbonControl control) {
@@ -78,9 +80,10 @@ namespace SMA {
       using (FormParams ParametersForm = new FormParams(ThisAddIn.Parameters)) {
         DialogResult Result = ParametersForm.ShowDialog();
         if (Result == DialogResult.OK) {
+          Logger.LogInfo("Saving new parameters from form ...");
           ParametersForm.NewParameters.Save();
-          ThisAddIn.Parameters.Read();
           Logger.LogInfo("Reading new parameters ...");
+          ThisAddIn.Parameters.Read();
           foreach (string LineItem in ThisAddIn.Parameters
             .ToString()
             .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
@@ -92,7 +95,7 @@ namespace SMA {
     }
 
     public void ViewLog_Click(Office.IRibbonControl control) {
-      using (FormLog LogForm = new FormLog(ThisAddIn.Parameters)) {
+      using (FormLog LogForm = new FormLog(ThisAddIn.Logger)) {
         LogForm.ShowDialog();
       }
     }
@@ -117,32 +120,41 @@ namespace SMA {
     }
 
     public Image GetImage(Office.IRibbonControl control) {
-      //Logger.LogInfo($"GetImage called for {control.Id}");
+      // avoid logging that shows modal dialogs during ribbon load
       switch (control.Id) {
         case INDICATEUR_BUTTON_ID:
-          //Logger.LogInfo("Returning image for Indicateur");
           return SMA.Properties.Resources.letter;
         case EDIT_INDICATEUR_PARAMETERS_BUTTON_ID:
-          //Logger.LogInfo("Returning image for IndicateurParams");
           return SMA.Properties.Resources.parameters.ToBitmap();
         case CLEANUP_SENT_ITEMS_BUTTON_ID:
-          //Logger.LogInfo("Returning image for CleanupSentItems");
           return SMA.Properties.Resources.parameters.ToBitmap();
         case INDICATEUR_LOG_ID:
-          //Logger.LogInfo("Returning image for IndicateurLog");
           return SMA.Properties.Resources.parameters.ToBitmap();
-
         default:
-          Logger.LogError($"Unknown control Id: {control.Id}");
+          // don't show message boxes during ribbon load; just return null
           return null;
-
       }
-
     }
 
     public bool GetTabVisibility(Office.IRibbonControl control) {
-      return ActiveExplorer?.CurrentFolder?.DefaultItemType == Outlook.OlItemType.olMailItem;
-
+      try {
+        var app = Globals.ThisAddIn?.Application;
+        if (app == null) {
+          return false;
+        }
+        var explorer = app.ActiveExplorer();
+        if (explorer == null) {
+          return false;
+        }
+        var folder = explorer.CurrentFolder;
+        if (folder == null) {
+          return false;
+        }
+        return folder.DefaultItemType == Outlook.OlItemType.olMailItem;
+      } catch {
+        // swallow exceptions in UI callbacks — prefer returning not visible
+        return false;
+      }
     }
 
     #endregion

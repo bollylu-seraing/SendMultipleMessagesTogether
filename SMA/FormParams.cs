@@ -18,25 +18,29 @@ namespace SMA {
     private readonly IParameters Parameters;
     public IParameters NewParameters { get; private set; }
 
-    private ILogger Logger => Parameters.Logger;
+    private ILogger Logger => Parameters?.Logger ?? ThisAddIn.DEFAULT_LOGGER;
 
     public FormParams() {
       InitializeComponent();
     }
 
     public FormParams(IParameters parameters) : this() {
-      Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+      Parameters = parameters;
     }
 
 
     private void Form1_Load(object sender, EventArgs e) {
+      if (Parameters == null) {
+        MessageBox.Show("Paramètres non disponibles, fermeture de la fenêtre des paramètres.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        this.DialogResult = DialogResult.Cancel;
+        this.Close();
+      }
       txtRecipient.Text = Parameters.Recipient;
       txtPrefix.Text = Parameters.Prefix;
       txtCategory.Text = Parameters.Category;
       txtLogFilename.Text = Parameters.LogFilename;
       chkAskConfirmation.Checked = Parameters.WithConfirmation;
       chkCleanupSentMessages.Checked = Parameters.CleanupSentMessages;
-
     }
 
     private void btnResetDefault_Click(object sender, EventArgs e) {

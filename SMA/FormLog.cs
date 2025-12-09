@@ -13,15 +13,15 @@ using System.Windows.Forms;
 namespace SMA {
   public partial class FormLog : Form {
 
-    private readonly IParameters Parameters;
-    private ILogger Logger => Parameters.Logger;
+    //private readonly IParameters Parameters;
+    private ILogger Logger;
 
     public FormLog() {
       InitializeComponent();
     }
 
-    public FormLog(IParameters parameters) : this() {
-      Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+    public FormLog(ILogger logger) : this() {
+      Logger = logger ?? ThisAddIn.DEFAULT_LOGGER;
     }
 
     private void FormLog_Load(object sender, EventArgs e) {
