@@ -1,17 +1,11 @@
-﻿using Microsoft.Office.Interop.Outlook;
-
-using SMA.Process;
-using SMA.Support;
+﻿using SMA.Process;
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows.Forms;
 
 using Office = Microsoft.Office.Core;
@@ -23,9 +17,9 @@ namespace SMA {
   public class RibbonSMA : Office.IRibbonExtensibility {
     private Office.IRibbonUI ribbon;
 
-    private const string RIBBON_ID = "Microsoft.Outlook.Explorer";
-    private const string TAB_ID = "TabMail";
-    private const string GROUP_ID = "SMAGroup";
+    //private const string RIBBON_ID = "Microsoft.Outlook.Explorer";
+    //private const string TAB_ID = "TabMail";
+    //private const string GROUP_ID = "SMAGroup";
 
     private const string INDICATEUR_BUTTON_ID = "Indicateur";
     private const string EDIT_INDICATEUR_PARAMETERS_BUTTON_ID = "IndicateurParam";
@@ -35,13 +29,12 @@ namespace SMA {
     private ILogger Logger => ThisAddIn.Logger;
 
     // Be tolerant: don't throw during ribbon load
-    private Outlook.Application Application => Globals.ThisAddIn?.Application;
-    private Explorer ActiveExplorer => Application?.ActiveExplorer();
-    private MAPIFolder SentMailFolder => Application?.Session == null ? null : Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
+    //private Outlook.Application Application => Globals.ThisAddIn?.Application;
+    //private Explorer ActiveExplorer => Application?.ActiveExplorer();
+    //private MAPIFolder SentMailFolder => Application?.Session == null ? null : Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
 
     #region --- Constructor ---------------------------------------------------
     public RibbonSMA() {
-      // avoid any logging/modal UI here — ribbon may be created before ThisAddIn_Startup
     }
     #endregion ----------------------------------------------------------------
 
@@ -54,11 +47,9 @@ namespace SMA {
     #endregion
 
     #region Ribbon Callbacks
-    //Create callback methods here. For more information about adding callback methods, visit https://go.microsoft.com/fwlink/?LinkID=271226
 
     public void Ribbon_Load(Office.IRibbonUI ribbonUI) {
       this.ribbon = ribbonUI;
-      // avoid modal logging here
     }
 
     public void SendToIndicator_Click(Office.IRibbonControl control) {

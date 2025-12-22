@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace SMA {
   internal class TFileLogger : ALogger {
+    
     readonly string Filename;
 
     public TFileLogger(string filename) {
-      //MessageBox.Show($"Log file: {filename.WithQuotes()}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
       Filename = filename;
       string FilePath = Path.GetDirectoryName(filename);
       try {
@@ -21,7 +21,8 @@ namespace SMA {
           Directory.CreateDirectory(FilePath);
         }
       } catch (Exception ex) {
-        MessageBox.Show($"Could not create log directory {FilePath.WithQuotes()}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        // Silently fail — do NOT show MessageBox during initialization
+        System.Diagnostics.Debug.WriteLine($"Could not create log directory {FilePath.WithQuotes()}: {ex.Message}");
       }
     }
 
@@ -29,18 +30,24 @@ namespace SMA {
       try {
         using (StreamWriter sw = new StreamWriter(Filename, true, Encoding.Default)) {
           sw.AutoFlush = true;
-          foreach (string line in message.Split(new[] { Environment.NewLine }, StringSplitOptions.None)) {
+          string[] lines = message.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+          foreach (string line in lines) {
             sw.WriteLine($"{DateTime.Now:u}: {line}");
           }
         }
-      } catch {
-        MessageBox.Show($"Could not write to log file {Filename.WithQuotes()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      } catch (Exception ex) {
+        // Silently fail — do NOT show MessageBox
+        System.Diagnostics.Debug.WriteLine($"Could not write to log file {Filename.WithQuotes()}: {ex.Message}");
       }
     }
 
     public override void Clear() {
-      File.Delete(Filename);
-      base.Clear();
+      try {
+        File.Delete(Filename);
+        base.Clear();
+      } catch {
+        // Silently ignore deletion errors
+      }
     }
 
     public override string GetLogContent() {

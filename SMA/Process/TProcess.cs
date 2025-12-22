@@ -26,11 +26,12 @@ namespace SMA.Process {
 
     private readonly ILogger Logger;
     private readonly IParameters Parameters;
+    private INotify Notifier => ThisAddIn.Notifier;
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TProcess(Outlook.Application application, ILogger logger, IParameters parameters) {
       Application = application;
-      Logger = logger;
+      Logger = logger ?? ThisAddIn.DEFAULT_LOGGER;
       Parameters = parameters;
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ namespace SMA.Process {
       List<MailItem> SelectedMailItems = explorer.Selection.OfType<MailItem>().ToList();
 
       if (!SelectedMailItems.Any()) {
-        MessageBox.Show("Vous devez sélectionner un ou plusieurs messages ...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Notifier.MessageError("Vous devez sélectionner un ou plusieurs messages ...");
         return false;
       }
 
@@ -57,7 +58,7 @@ namespace SMA.Process {
             continue;
           }
 
-          if (ThisAddIn.Parameters.WithConfirmation && MessageBox.Show($"Envoyer le message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} à l'Indicateur ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) {
+          if (ThisAddIn.Parameters.WithConfirmation && Notifier.MessageYesNo($"Envoyer le message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} à l'Indicateur ?") == DialogResult.No) {
             Logger.LogInfo($"Envoi du message {MailItemItem.Subject?.WithQuotes() ?? ERROR_SUBJECT_MISSING} annulé par l'utilisateur");
             return false;
           }

@@ -15,6 +15,8 @@ using System.Windows.Forms;
 namespace SMA {
   public partial class FormParams : Form {
 
+    private INotify Notifier => ThisAddIn.Notifier;
+
     private readonly IParameters Parameters;
     public IParameters NewParameters { get; private set; }
 
@@ -31,7 +33,7 @@ namespace SMA {
 
     private void Form1_Load(object sender, EventArgs e) {
       if (Parameters == null) {
-        MessageBox.Show("Paramètres non disponibles, fermeture de la fenêtre des paramètres.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Notifier.MessageError("Paramètres non disponibles, fermeture de la fenêtre des paramètres.");
         this.DialogResult = DialogResult.Cancel;
         this.Close();
       }
@@ -44,7 +46,7 @@ namespace SMA {
     }
 
     private void btnResetDefault_Click(object sender, EventArgs e) {
-      if (MessageBox.Show("Confirmer la réinitialisation des paramètres par défaut ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) {
+      if (Notifier.MessageYesNo("Confirmer la réinitialisation des paramètres par défaut ?") != DialogResult.Yes) {
         return;
       }
       txtRecipient.Text = AParameters.DEFAULT_RECIPIENT;
@@ -61,7 +63,7 @@ namespace SMA {
     }
 
     private void btnOk_Click(object sender, EventArgs e) {
-      if (MessageBox.Show("Confirmer les nouveaux paramètres ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) {
+      if (Notifier.MessageYesNo("Confirmer les nouveaux paramètres ?") != DialogResult.Yes) {
         return;
       }
       NewParameters = new TParametersRegistry() {

@@ -26,10 +26,10 @@ namespace SMA {
 
     public override bool Init() {
       try {
-        RegistryKey HKCU = Registry.CurrentUser;
-        using (RegistryKey ApplicationKey = HKCU.OpenSubKey(KeyName, true)) {
+        using (RegistryKey ApplicationKey = Registry.CurrentUser.OpenSubKey(KeyName)) {
           if (ApplicationKey == null) {
-            using (RegistryKey NewApplicationKey = HKCU.CreateSubKey(KeyName)) {
+            Logger?.LogInfo($"Registry key {$"HKCU\\{KeyName}".WithQuotes()} not found. Attempt to create it with default values.");
+            using (RegistryKey NewApplicationKey = Registry.CurrentUser.CreateSubKey(KeyName)) {
               NewApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
               NewApplicationKey.SetValue(KEY_PREFIX, Prefix);
               NewApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
@@ -49,18 +49,21 @@ namespace SMA {
 
     public override bool Read() {
       try {
-        RegistryKey HKCU = Registry.CurrentUser;
-        using (RegistryKey ApplicationKey = Registry.CurrentUser.OpenSubKey(KeyName, false)) {
-          if (!Init()) {
+        if (!Init()) {
+          return false;
+        }
+        using (RegistryKey ApplicationKey = Registry.CurrentUser.OpenSubKey(KeyName)) {
+          if (ApplicationKey == null) {
+            Logger?.LogError($"Registry key {$"HKCU\\{KeyName}".WithQuotes()} not found.");
             return false;
           }
-          Recipient = (string)(ApplicationKey?.GetValue(KEY_RECIPIENT) ?? DEFAULT_RECIPIENT);
-          Prefix = (string)(ApplicationKey?.GetValue(KEY_PREFIX) ?? DEFAULT_PREFIX);
-          LogType = (ELogType)Enum.Parse(typeof(ELogType), (string)(ApplicationKey?.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE.ToString()));
-          LogFilename = ((string)(ApplicationKey?.GetValue(KEY_LOG_FILENAME) ?? DEFAULT_LOG_FULL_FILENAME)).RemoveExternalQuotes();
-          Category = (string)(ApplicationKey?.GetValue(KEY_CATEGORY) ?? DEFAULT_CATEGORY);
-          WithConfirmation = ((string)(ApplicationKey?.GetValue(KEY_WITH_CONFIRMATION) ?? DEFAULT_WITH_CONFIRMATION.ToString())).ToBool();
-          CleanupSentMessages = ((string)(ApplicationKey?.GetValue(KEY_CLEANUP_SENT_MESSAGES) ?? DEFAULT_CLEANUP_SENT_MESSAGES.ToString())).ToBool();
+          Recipient = (string)(ApplicationKey.GetValue(KEY_RECIPIENT) ?? DEFAULT_RECIPIENT);
+          Prefix = (string)(ApplicationKey.GetValue(KEY_PREFIX) ?? DEFAULT_PREFIX);
+          LogType = (ELogType)Enum.Parse(typeof(ELogType), (string)(ApplicationKey.GetValue(KEY_LOG_TYPE) ?? DEFAULT_LOG_TYPE.ToString()));
+          LogFilename = ((string)(ApplicationKey.GetValue(KEY_LOG_FILENAME) ?? DEFAULT_LOG_FULL_FILENAME)).RemoveExternalQuotes();
+          Category = (string)(ApplicationKey.GetValue(KEY_CATEGORY) ?? DEFAULT_CATEGORY);
+          WithConfirmation = ((string)(ApplicationKey.GetValue(KEY_WITH_CONFIRMATION) ?? DEFAULT_WITH_CONFIRMATION.ToString())).ToBool();
+          CleanupSentMessages = ((string)(ApplicationKey.GetValue(KEY_CLEANUP_SENT_MESSAGES) ?? DEFAULT_CLEANUP_SENT_MESSAGES.ToString())).ToBool();
         }
         if (LogType == ELogType.File) {
           string LogFilePath = Path.GetDirectoryName(LogFilename);
@@ -73,8 +76,8 @@ namespace SMA {
         }
         return true;
       } catch (Exception ex) {
-        Logger.LogError($"Error reading parameters from registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
-        Logger.LogInfo("Attempt to save the registry keys with default values.");
+        Logger?.LogError($"Error reading parameters from registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);
+        Logger?.LogInfo("Attempt to save the registry keys with default values.");
         return Save();
       }
     }
@@ -82,28 +85,25 @@ namespace SMA {
     public override bool Save() {
 
       try {
-        RegistryKey HKCU = Registry.CurrentUser;
-        using (RegistryKey ApplicationKey = HKCU.OpenSubKey(KeyName, true)) {
-          if (ApplicationKey == null) {
-            using (RegistryKey NewApplicationKey = HKCU.CreateSubKey(KeyName)) {
-              NewApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
-              NewApplicationKey.SetValue(KEY_PREFIX, Prefix);
-              NewApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
-              NewApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
-              NewApplicationKey.SetValue(KEY_CATEGORY, Category);
-              NewApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation.ToString());
-              NewApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages.ToString());
-            }
-          } else {
-            ApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
-            ApplicationKey.SetValue(KEY_PREFIX, Prefix);
-            ApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
-            ApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
-            ApplicationKey.SetValue(KEY_CATEGORY, Category);
-            ApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation.ToString());
-            ApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages.ToString());
+        // First check for key presence. If not attempt to create it
+        if (Registry.CurrentUser.OpenSubKey(KeyName) == null) {
+          if (Registry.CurrentUser.CreateSubKey(KeyName) == null) {
+            Logger?.LogError($"Error creating registry key {$"HKCU\\{KeyName}".WithQuotes()}");
+            return false;
           }
         }
+
+        // Opens the key as writable and save the parameters
+        using (RegistryKey ApplicationKey = Registry.CurrentUser.OpenSubKey(KeyName, true)) {
+          ApplicationKey.SetValue(KEY_RECIPIENT, Recipient);
+          ApplicationKey.SetValue(KEY_PREFIX, Prefix);
+          ApplicationKey.SetValue(KEY_LOG_TYPE, LogType.ToString());
+          ApplicationKey.SetValue(KEY_LOG_FILENAME, LogFilename);
+          ApplicationKey.SetValue(KEY_CATEGORY, Category);
+          ApplicationKey.SetValue(KEY_WITH_CONFIRMATION, WithConfirmation.ToString());
+          ApplicationKey.SetValue(KEY_CLEANUP_SENT_MESSAGES, CleanupSentMessages.ToString());
+        }
+
         return true;
       } catch (Exception ex) {
         Logger?.LogError($"Error writing parameters to registry key {$"HKCU\\{KeyName}".WithQuotes()}", ex);

@@ -230,6 +230,10 @@
     <Compile Include="Logger\ELogType.cs" />
     <Compile Include="Logger\TConsoleLogger.cs" />
     <Compile Include="Logger\TMessageBoxLogger.cs" />
+    <Compile Include="Notify\INotify.cs" />
+    <Compile Include="Notify\TNotifyForm.cs" />
+    <Compile Include="Notify\TNotifyConsole.cs" />
+    <Compile Include="Notify\TNotifyMessagebox.cs" />
     <Compile Include="Parameters\AParameters.cs" />
     <Compile Include="Parameters\IParameters.cs" />
     <Compile Include="Logger\ALogger.cs" />

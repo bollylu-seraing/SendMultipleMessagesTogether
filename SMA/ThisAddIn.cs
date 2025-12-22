@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml.Linq;
-
-using SMA.Support;
-
-using Office = Microsoft.Office.Core;
-using Outlook = Microsoft.Office.Interop.Outlook;
+using System.Threading;
 
 namespace SMA {
   public partial class ThisAddIn {
 
     public const string DEFAULT_APPLICATION_NAME = "SMA";
-    public static Version APPLICATION_VERSION = new Version(1, 3, 8);
+    public static Version APPLICATION_VERSION = new Version(1, 3, 9);
 
     public const string PARAMETERS_FILENAME = "ApplicationParameters.conf";
     public static string PARAMETERS_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DEFAULT_APPLICATION_NAME);
@@ -28,30 +19,52 @@ namespace SMA {
 
     public static IParameters Parameters { get; private set; }
 
+    public static INotify Notifier { get; private set; } = new TNotifyMessagebox();
+
     protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject() {
       return new RibbonSMA();
     }
 
     private void ThisAddIn_Startup(object sender, System.EventArgs e) {
       try {
-        Parameters = new TParametersRegistry();
-        if (!Parameters.Init()) {
-          return;
-        }
-        if (!Parameters.Read()) {
+        // Initialize parameters with a timeout to prevent Outlook hang
+        bool initialized = false;
+        System.Threading.Thread initThread = new System.Threading.Thread(() => {
+          try {
+            Parameters = new TParametersRegistry();
+            if (!Parameters.Init()) {
+              return;
+            }
+            if (!Parameters.Read()) {
+              return;
+            }
+            initialized = true;
+          } catch (Exception ex) {
+            DEFAULT_LOGGER.LogError("Fatal error during parameter initialization", ex);
+          }
+        });
+
+        initThread.IsBackground = true;
+        initThread.Start();
+
+        // Wait max 5 seconds for initialization
+        if (!initThread.Join(5000)) {
+          DEFAULT_LOGGER.LogError("Parameter initialization timed out — using defaults");
+          initThread.Abort();
           return;
         }
 
-        Logger.LogInfo($"SMA v{APPLICATION_VERSION} started");
+        if (initialized) {
+          Logger.LogInfo($"SMA v{APPLICATION_VERSION} started");
+        }
       } catch (Exception ex) {
         DEFAULT_LOGGER.LogError("Fatal error during startup", ex);
       }
     }
 
     private void ThisAddIn_Shutdown(object sender, System.EventArgs e) {
-      Logger.LogInfo($"SMA v{APPLICATION_VERSION} exited gracefuly");
+      Logger.LogInfo($"SMA v{APPLICATION_VERSION} exited gracefully");
     }
-
 
     #region VSTO generated code
 
